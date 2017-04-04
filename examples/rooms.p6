@@ -1,3 +1,4 @@
+use v6;
 use Matrix::Client;
 
 my $c = Matrix::Client.new: :home-server<https://matrix.deprecated.org>;

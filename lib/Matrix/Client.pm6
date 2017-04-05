@@ -92,6 +92,55 @@ method check-res($res) {
     }
 }
 
+# User Data
+
+method profile(Str :$user-id?) {
+    my $id = $user-id // $!user-id;
+    my $res = $.get("/profile/" ~ $id);
+    $.check-res($res);
+    $res
+}
+
+method display-name(Str :$user-id?) {
+    my $id = $user-id // $!user-id;
+    my $res = $.get("/profile/" ~ $id ~ "/displayname");
+    $.check-res($res);
+
+    my $data = from-json($res.content);
+
+    $data<displayname> // ""
+}
+
+method change-display-name(Str:D $display-name!) {
+    my $res = $.put("/profile/" ~ $!user-id ~ "/displayname",
+                    displayname => $display-name);
+    return $.check-res($res);
+}
+
+method avatar-url(Str :$user-id?) {
+    my $id = $user-id // $!user-id;
+    my $res = $.get("/profile/" ~ $id ~ "/avatar_url");
+    $.check-res($res);
+    my $data = from-json($res.content);
+
+    $data<avatar_url> // ""
+}
+
+method change-avatar(Str:D $avatar!, Bool :$upload) {
+    my $mxc-url;
+    if so $upload {
+        $mxc-url = $.upload($avatar);
+    } else {
+        $mxc-url = $avatar;
+    }
+
+    my $res = $.put("/profile/" ~ $!user-id ~ "/avatar_url",
+                    avatar_url => $mxc-url);
+    return $.check-res($res);
+}
+
+# Syncronization
+
 multi method sync() {
     my $res = $.get("/sync",
         timeout => 30000
@@ -116,6 +165,8 @@ multi method sync(:$sync-filter is copy, :$since = "") {
     $.sync(sync-filter => to-json($sync-filter), since => $since)
 }
 
+# Rooms
+
 method join-room($room-id!) {
     $.post("/join/" ~ $room-id)
 }
@@ -135,4 +186,14 @@ method rooms() {
 method send(Str $room-id, Str $body, :$type? = "m.text") {
     $Matrix::Client::Common::TXN-ID++;
     $.put("/rooms/$room-id/send/m.room.message/{$Matrix::Client::Common::TXN-ID}", msgtype => $type, body => $body)
+}
+
+# Media
+
+method upload(Str $path where *.IO.f) {
+    my $buf = slurp $path, :bin;
+    my $res = $.post-bin("/upload", $buf, content-type => "image/png");
+    $.check-res($res);
+    my $data = from-json($res.content);
+    $data<content_uri> // "";
 }

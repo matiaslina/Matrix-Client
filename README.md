@@ -1,8 +1,8 @@
 # Matrix client
 
-Simple [matrix](https://matrix.org) client.
+A perl 6 library for [Matrix](https://matrix.org).
 
-# Examples
+## Examples
 
 From the `examples` directory:
 

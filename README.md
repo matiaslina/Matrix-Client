@@ -4,7 +4,7 @@ A perl 6 library for [Matrix](https://matrix.org).
 
 ## Status
 
-This project is in early development. A lot of methods returns a raw
+This project is in early development. A lot of methods return a raw
 `HTTP::Response` and not something from this library.
 
 ## Examples

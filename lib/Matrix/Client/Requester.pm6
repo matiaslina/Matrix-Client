@@ -17,7 +17,7 @@ method get(Str $path, :$media = False, *%data) {
     for %data.kv -> $k,$v {
         $q ~= "&$k=$v" unless $v eq "";
     }
-    my $uri = uri_encode($.base-url($media) ~ $q);
+    my $uri = uri_encode($.base-url(:$media) ~ $q);
 
     $!ua.history = [];
     $!ua.get($uri)

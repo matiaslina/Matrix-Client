@@ -9,9 +9,21 @@ unit class Matrix::Client does Matrix::Client::Requester;
 
 has Str $!user-id;
 has Str $!device-id;
-has Str $.state-file = 'state';
+has Str $!auth-file;
+has $!logged = False;
 has @!rooms;
 has @!users;
+
+submethod BUILD(:$!home-server, :$!auth-file = 'auth') {
+    if $!auth-file.IO.e {
+        my $data = from-json(slurp $!auth-file);
+        $!access-token = $data<access_token>;
+        $!user-id = $data<user_id>;
+        $!device-id = $data<device_id>;
+        $Matrix::Client::Common::TXN-ID = $data<txn_id> // 0;
+        $!logged = True;
+    }
+}
 
 method user-id() {
     $!user-id
@@ -22,14 +34,7 @@ method device-id() {
 }
 
 method login(Str $username, Str $pass) returns Bool {
-    if $.state-file.IO.e {
-        my $data = from-json(slurp $.state-file);
-        $!access-token = $data<access_token>;
-        $!user-id = $data<user_id>;
-        $!device-id = $data<device_id>;
-        $Matrix::Client::Common::TXN-ID = $data<txn_id> // 0;
-        return True
-    }
+    return True if $!logged;
 
     # Handle POST
     my $data = to-json {
@@ -40,7 +45,7 @@ method login(Str $username, Str $pass) returns Bool {
 
     my $res = $.post("/login", $data);
     if $res.is-success {
-        spurt $.state-file, $res.content;
+        spurt $!auth-file, $res.content;
         my $data = from-json($res.content);
         $!access-token = $data<access_token>;
         $!user-id = $data<user_id>;
@@ -51,18 +56,18 @@ method login(Str $username, Str $pass) returns Bool {
     }
 }
 
-method finish() {
+method save-auth-data() {
     my %data = 
         access_token => $!access-token,
         user_id => $!user-id,
         device_id => $!device-id,
         txn_id => $Matrix::Client::Common::TXN-ID;
 
-    spurt $.state-file, to-json(%data);
+    spurt $!auth-file, to-json(%data);
 }
 
 method logout() {
-    unlink $.state-file;
+    unlink $!auth-file;
     $.post("/logout")
 }
 
@@ -171,13 +176,20 @@ method join-room($room-id!) {
     $.post("/join/" ~ $room-id)
 }
 
-method rooms() {
+method rooms(Bool :$sync = False) {
+    return @!rooms unless $sync;
     my $res = $.get("/sync", timeout => "30000");
 
     return () unless $res.is-success;
+    @!rooms = ();
     my $data = from-json($res.content);
     for $data<rooms><join>.kv -> $id, $json {
-        @!rooms.push(Matrix::Client::Room.new(id => $id, json => $json, home-server => $!home-server));
+        @!rooms.push(Matrix::Client::Room.new(
+            id => $id,
+            json => $json,
+            home-server => $!home-server,
+            access-token => $!access-token
+        ));
     }
 
     @!rooms

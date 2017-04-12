@@ -2,16 +2,16 @@
     "perl"         : "6.c",
     "name"         : "Matrix::Client",
     "version"      : "0.1.0",
-    "description"  : "Simple matrix.org client",
+    "description"  : "Matrix client for Perl 6",
     "tags"         : [ "Net", "Matrix" ],
     "depends"      : [
         "JSON::Tiny",
         "HTTP::UserAgent",
-        "URI::Encode"
+        "URI::Encode",
+        "IO::Socket::SSL"
     ],
     "test-depends" : [
-        "Test",
-        "Test::META"
+        "Test"
     ],
     "provides"     : {
         "Matrix::Client"            : "lib/Matrix/Client.pm6",
@@ -20,5 +20,5 @@
         "Matrix::Client::Common"    : "lib/Matrix/Client/Common.pm6"
     },
     "authors"       : ["Matias Linares"],
-    "support"       : {"source"   : ""}
+    "support"       : {"source"   : "git://github.com/matiaslina/perl6-matrix-client.git"}
 }

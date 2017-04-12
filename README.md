@@ -2,6 +2,11 @@
 
 A perl 6 library for [Matrix](https://matrix.org).
 
+## Status
+
+This project is in early development. A lot of methods returns a raw
+`HTTP::Response` and not something from this library.
+
 ## Examples
 
 From the `examples` directory:
@@ -15,7 +20,7 @@ From the `examples` directory:
     $client.login: @*ARGS[0], @*ARGS[1];
 
     # Show all joined rooms
-    say $client.rooms;
+    say $client.rooms(:sync);
 
     # And finally logout.
     $client.logout

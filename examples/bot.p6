@@ -5,7 +5,7 @@ use JSON::Tiny;
 use Matrix::Client;
 
 class Bot {
-    has $!name = "deprecated";
+    has $!name = "!d";
     has $!username is required;
     has Bool $!register = False;
     has @!room-ids;
@@ -28,7 +28,7 @@ class Bot {
     }
 
     method shutdown() {
-        $!client.finish;
+        $!client.save-auth-data;
     }
 
     method listen() {
@@ -77,11 +77,18 @@ sub MAIN(Str:D $username, Str:D $password, :$home-server = "https://matrix.depre
                     say "Someone is saying hi!";
                     "Hello @ {DateTime.now}"
                 }
+                when /poop/ {
+                    parse-names "PILE OF POO"
+                }
+                when /wink/ {
+                    parse-names "WINKING FACE"
+                }
                 default { say "Dunno what's telling me"; Str }
             }
         };
 
     signal(SIGINT).tap({
+        say "Bye";
         $bot.shutdown;
         exit 0;
     });
@@ -91,6 +98,7 @@ sub MAIN(Str:D $username, Str:D $password, :$home-server = "https://matrix.depre
         if !$res.is-success {
             warn $res.status-line;
             warn $res.content;
+            die "Error joinig to rooms";
         }
     }
     

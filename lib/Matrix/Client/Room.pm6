@@ -8,9 +8,7 @@ has $.name is rw;
 has $.id is rw;
 has $!prev-batch;
 
-submethod BUILD(Str :$id!, :$json, :$home-server!) {
-    $!home-server = $home-server;
-    $!id = $id;
+submethod BUILD(Str :$!id!, :$json!, :$!home-server!, :$!access-token!) {
     $!url-prefix = "/rooms/$!id";
     $!prev-batch = $json<timeline><prev_batch>;
     
@@ -36,7 +34,7 @@ method messages() {
     return $data<chunk>.clone;
 }
 
-method send($room-id, Str $body!, Str :$type? = "m.text") {
+method send(Str $body!, Str :$type? = "m.text") {
     $Matrix::Client::Common::TXN-ID++;
     $.put("/send/m.room.message/{$Matrix::Client::Common::TXN-ID}", msgtype => $type, body => $body)
 }

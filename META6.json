@@ -20,5 +20,6 @@
         "Matrix::Client::Common"    : "lib/Matrix/Client/Common.pm6"
     },
     "authors"       : ["Matias Linares"],
-    "support"       : {"source"   : "git://github.com/matiaslina/perl6-matrix-client.git"}
+    "support"       : {"source"   : "git://github.com/matiaslina/perl6-matrix-client.git"},
+    "source-url"    : "https://github.com/matiaslina/perl6-matrix-client.git"
 }

@@ -19,7 +19,6 @@ method get(Str $path, :$media = False, *%data) {
     }
     my $uri = uri_encode($.base-url(:$media) ~ $q);
 
-    $!ua.history = [];
     $!ua.get($uri)
 }
 
@@ -35,13 +34,11 @@ multi method post(Str $path, Str $json, :$media = False) {
     my $req = HTTP::Request.new(POST => $.base-url(:$media) ~ $path ~ "?access_token=$!access-token",
                                 Content-Type => 'application/json');
     $req.add-content($json);
-    $!ua.history = [];
     $!ua.request($req)
 }
 
 method post-bin(Str $path, Buf $buf, :$content-type) {
     my $req = POST($.base-url(:media) ~ $path ~ "?access_token=$!access-token", content => $buf, Content-Type => $content-type);
-    $!ua.history = [];
     $!ua.request($req)
 }
 
@@ -53,7 +50,6 @@ multi method put(Str $path,Str $json) {
     my $req = HTTP::Request.new(PUT => $.base-url() ~ $path ~ "?access_token=$!access-token",
                                 Content-Type => 'application/json');
     $req.add-content($json);
-    $!ua.history = [];
     $!ua.request($req)
 }
 

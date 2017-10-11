@@ -5,5 +5,5 @@ install:
   - rakudobrew build zef
   - zef --debug --depsonly install .
 script:
-  - probe -v -e 'perl6 -Ilib' t/
+  - prove -v -e 'perl6 -Ilib' t/
 sudo: false

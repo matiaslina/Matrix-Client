@@ -12,7 +12,8 @@
         "IO::Socket::SSL"
     ],
     "test-depends" : [
-        "Test"
+        "Test",
+        "Test::META"
     ],
     "provides"     : {
         "Matrix::Client"            : "lib/Matrix/Client.pm6",

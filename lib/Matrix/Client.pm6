@@ -7,14 +7,14 @@ use Matrix::Client::Requester;
 
 unit class Matrix::Client does Matrix::Client::Requester;
 
-has Str $!user-id;
-has Str $!device-id;
+has Str $.user-id;
+has Str $.device-id;
 has Str $!auth-file;
 has $!logged = False;
 has @!rooms;
 has @!users;
 
-submethod BUILD(:$!home-server, :$!auth-file = 'auth') {
+submethod BUILD(:$!home-server!, :$!auth-file = 'auth') {
     if $!auth-file.IO.e {
         my $data = from-json(slurp $!auth-file);
         $!access-token = $data<access_token>;
@@ -23,14 +23,6 @@ submethod BUILD(:$!home-server, :$!auth-file = 'auth') {
         $Matrix::Client::Common::TXN-ID = $data<txn_id> // 0;
         $!logged = True;
     }
-}
-
-method user-id() {
-    $!user-id
-}
-
-method device-id() {
-    $!device-id
 }
 
 method login(Str $username, Str $pass) returns Bool {
@@ -59,8 +51,8 @@ method login(Str $username, Str $pass) returns Bool {
 method save-auth-data() {
     my %data = 
         access_token => $!access-token,
-        user_id => $!user-id,
-        device_id => $!device-id,
+        user_id => $.user-id,
+        device_id => $.device-id,
         txn_id => $Matrix::Client::Common::TXN-ID;
 
     spurt $!auth-file, to-json(%data);
@@ -100,14 +92,14 @@ method check-res($res) {
 # User Data
 
 method profile(Str :$user-id?) {
-    my $id = $user-id // $!user-id;
+    my $id = $user-id // $.user-id;
     my $res = $.get("/profile/" ~ $id);
     $.check-res($res);
     $res
 }
 
 method display-name(Str :$user-id?) {
-    my $id = $user-id // $!user-id;
+    my $id = $user-id // $.user-id;
     my $res = $.get("/profile/" ~ $id ~ "/displayname");
     $.check-res($res);
 
@@ -117,13 +109,13 @@ method display-name(Str :$user-id?) {
 }
 
 method change-display-name(Str:D $display-name!) {
-    my $res = $.put("/profile/" ~ $!user-id ~ "/displayname",
+    my $res = $.put("/profile/" ~ $.user-id ~ "/displayname",
                     displayname => $display-name);
     return $.check-res($res);
 }
 
 method avatar-url(Str :$user-id?) {
-    my $id = $user-id // $!user-id;
+    my $id = $user-id // $.user-id;
     my $res = $.get("/profile/" ~ $id ~ "/avatar_url");
     $.check-res($res);
     my $data = from-json($res.content);
@@ -139,7 +131,7 @@ method change-avatar(Str:D $avatar!, Bool :$upload) {
         $mxc-url = $avatar;
     }
 
-    my $res = $.put("/profile/" ~ $!user-id ~ "/avatar_url",
+    my $res = $.put("/profile/" ~ $.user-id ~ "/avatar_url",
                     avatar_url => $mxc-url);
     return $.check-res($res);
 }

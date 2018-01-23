@@ -77,12 +77,6 @@ sub MAIN(Str:D $username, Str:D $password, :$home-server = "https://matrix.depre
                     say "Someone is saying hi!";
                     "Hello @ {DateTime.now}"
                 }
-                when /poop/ {
-                    parse-names "PILE OF POO"
-                }
-                when /wink/ {
-                    parse-names "WINKING FACE"
-                }
                 default { say "Dunno what's telling me"; Str }
             }
         };

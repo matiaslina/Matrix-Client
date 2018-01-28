@@ -83,8 +83,7 @@ method check-res($res) {
     if $res.is-success {
         True
     } else {
-        warn $res.status-line;
-        warn $res.content;
+        warn "Error with response: {$res.status-line}: {$res.content}";
         False
     }
 }

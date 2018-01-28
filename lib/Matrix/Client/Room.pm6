@@ -4,13 +4,11 @@ use Matrix::Client::Requester;
 
 unit class Matrix::Client::Room does Matrix::Client::Requester;
 
-has $.name is rw;
-has $.id is rw;
-has $!prev-batch;
+has $!name;
+has $.id;
 
-submethod BUILD(Str :$!id!, :$json!, :$!home-server!, :$!access-token!) {
+multi submethod BUILD(Str :$!id!, :$!home-server!, :$!access-token!, :$json?) {
     $!url-prefix = "/rooms/$!id";
-    $!prev-batch = $json<timeline><prev_batch>;
     
     if so $json {
         my @events = $json<state><events>.clone;
@@ -20,11 +18,20 @@ submethod BUILD(Str :$!id!, :$json!, :$!home-server!, :$!access-token!) {
             }
         }
     }
+}
 
-    # FIXME: Should be a 1:1 conversation
-    unless $!name {
-        $!name = "Unknown";
+method !get-name() {
+    my $res = $.get('/state/m.room.name');
+    if $res.is-success {
+        $!name = from-json($res.content)<name>
+    } else {
+        warn "Error {$res.status-line}, content {$res.content}";
     }
+}
+
+method name() {
+    unless $!name.so { self!get-name() }
+    $!name
 }
 
 method messages() {
@@ -39,6 +46,11 @@ method send(Str $body!, Str :$type? = "m.text") {
     $.put("/send/m.room.message/{$Matrix::Client::Common::TXN-ID}", msgtype => $type, body => $body)
 }
 
+method leave() {
+    $.post('/leave')
+}
+
 method gist(--> Str) {
-    "Room<name: $.name, id: $.id>"
+    my $name = self.name();
+    "Room<name: {self.name()}, id: {self.id}>"
 }

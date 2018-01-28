@@ -162,7 +162,11 @@ multi method sync(:$sync-filter is copy, :$since = "") {
 # Rooms
 
 method join-room($room-id!) {
-    $.post("/join/" ~ $room-id)
+    $.post("/join/$room-id")
+}
+
+method leave-room($room-id) {
+    $.post("/rooms/$room-id/leave");
 }
 
 method rooms(Bool :$sync = False) {

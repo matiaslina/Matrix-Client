@@ -188,9 +188,32 @@ method rooms(Bool :$sync = False) {
     @!rooms
 }
 
+method joined-rooms() {
+    my $res = $.get('/joined_rooms');
+
+    unless $res.is-success {
+        note "Error getting joined rooms: {$res.status}";
+        return ();
+    }
+    my $data = from-json($res.content);
+    return $data<joined_rooms>.Seq.map(-> $room-id {
+        Matrix::Client::Room.new(
+            id => $room-id,
+            home-server => $!home-server,
+            access-token => $!access-token
+        )
+    });
+}
+
+method public-rooms() {
+    $.get('/publicRooms')
+}
+
 method send(Str $room-id, Str $body, :$type? = "m.text") {
     $Matrix::Client::Common::TXN-ID++;
-    $.put("/rooms/$room-id/send/m.room.message/{$Matrix::Client::Common::TXN-ID}", msgtype => $type, body => $body)
+    $.put("/rooms/$room-id/send/m.room.message/{$Matrix::Client::Common::TXN-ID}",
+          msgtype => $type, body => $body
+    )
 }
 
 # Media

@@ -122,14 +122,12 @@ method avatar-url(Str :$user-id?) {
     $data<avatar_url> // ""
 }
 
-method change-avatar(Str:D $avatar!, Bool :$upload) {
-    my $mxc-url;
-    if so $upload {
-        $mxc-url = $.upload($avatar);
-    } else {
-        $mxc-url = $avatar;
-    }
+multi method change-avatar(IO::Path $avatar) {
+    my $mxc-url = $.upload($avatar.IO);
+    samewith($mxc-url);
+}
 
+multi method change-avatar(Str:D $mxc-url!) {
     my $res = $.put("/profile/" ~ $.user-id ~ "/avatar_url",
                     avatar_url => $mxc-url);
     return $.check-res($res);
@@ -193,9 +191,13 @@ method send(Str $room-id, Str $body, :$type? = "m.text") {
 
 # Media
 
-method upload(Str $path where *.IO.f) {
+method upload(IO::Path $path, Str $filename?) {
     my $buf = slurp $path, :bin;
-    my $res = $.post-bin("/upload", $buf, content-type => "image/png");
+    my $fn = $filename ?? $filename !! $path.basename;
+    my $res = $.post-bin("/upload", $buf,
+        content-type => "image/png",
+        filename => $fn,
+    );
     $.check-res($res);
     my $data = from-json($res.content);
     $data<content_uri> // "";

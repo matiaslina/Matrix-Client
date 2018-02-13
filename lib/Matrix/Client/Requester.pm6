@@ -2,6 +2,7 @@ use HTTP::UserAgent;
 use HTTP::Request::Common;
 use URI::Encode;
 use JSON::Tiny;
+use Matrix::Client::Exception;
 
 unit role Matrix::Client::Requester;
 
@@ -12,14 +13,22 @@ has $!url-prefix = "";
 has $!access-token = "";
 has $!sync-since = "";
 
+method !handle-error($response) {
+    unless $response.is-success {
+        my $data = from-json($response.content);
+        X::Matrix::Response.new(:code($data<errcode>), :error($data<error>)).throw;
+    }
+    $response
+}
+
 method get(Str $path, :$media = False, *%data) {
     my $q = "$path?access_token=$!access-token";
     for %data.kv -> $k,$v {
-        $q ~= "&$k=$v" unless $v eq "";
+        $q ~= "&$k=$v" if $v.so;
     }
     my $uri = uri_encode($.base-url(:$media) ~ $q);
 
-    $!ua.get($uri)
+    return self!handle-error($!ua.get($uri));
 }
 
 method base-url(Bool :$media? = False --> Str) {
@@ -34,23 +43,24 @@ multi method post(Str $path, Str $json, :$media = False) {
     my $req = HTTP::Request.new(POST => $.base-url(:$media) ~ $path ~ "?access_token=$!access-token",
                                 Content-Type => 'application/json');
     $req.add-content($json);
-    $!ua.request($req)
-}
 
-method post-bin(Str $path, Buf $buf, :$content-type) {
-    my $req = POST($.base-url(:media) ~ $path ~ "?access_token=$!access-token", content => $buf, Content-Type => $content-type);
-    $!ua.request($req)
+    return self!handle-error($!ua.request($req));
 }
 
 multi method post(Str $path, :$media = False, *%params) {
     self.post($path, :$media, to-json(%params))
 }
 
-multi method put(Str $path,Str $json) {
+method post-bin(Str $path, Buf $buf, :$content-type) {
+    my $req = POST($.base-url(:media) ~ $path ~ "?access_token=$!access-token", content => $buf, Content-Type => $content-type);
+    return self!handle-error($!ua.request($req));
+}
+
+multi method put(Str $path, Str $json) {
     my $req = HTTP::Request.new(PUT => $.base-url() ~ $path ~ "?access_token=$!access-token",
                                 Content-Type => 'application/json');
     $req.add-content($json);
-    $!ua.request($req)
+    return self!handle-error($!ua.request($req))
 }
 
 multi method put(Str $path, *%params) {

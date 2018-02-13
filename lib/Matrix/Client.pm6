@@ -1,6 +1,7 @@
 use HTTP::Request::Common;
 use URI::Encode;
 use JSON::Tiny;
+use Matrix::Response;
 use Matrix::Client::Common;
 use Matrix::Client::Room;
 use Matrix::Client::Requester;
@@ -26,7 +27,7 @@ submethod BUILD(:$!home-server!, :$!auth-file = 'auth') {
 }
 
 method login(Str $username, Str $pass) returns Bool {
-    return True if $!logged;
+    return if $!logged;
 
     # Handle POST
     my $data = to-json {
@@ -36,16 +37,12 @@ method login(Str $username, Str $pass) returns Bool {
     };
 
     my $res = $.post("/login", $data);
-    if $res.is-success {
-        spurt $!auth-file, $res.content;
-        my $data = from-json($res.content);
-        $!access-token = $data<access_token>;
-        $!user-id = $data<user_id>;
-        $!device-id = $data<device_id>;
-        True
-    } else {
-        False
-    }
+    spurt $!auth-file, $res.content;
+
+    my $data = from-json($res.content);
+    $!access-token = $data<access_token>;
+    $!user-id = $data<user_id>;
+    $!device-id = $data<device_id>;
 }
 
 method save-auth-data() {
@@ -70,37 +67,21 @@ method register($username, $password, Bool :$bind-email? = False) {
                      auth => {
                             type => "m.login.dummy"
                     });
-    if $res.is-success {
-        my $data = from-json $res.content;
-        $!access-token = $data<access_token>;
-        $.user-id = $data<user_id>;
-    } else {
-        die "Error with the homeserver: " ~ $res.content;
-    }
-}
-
-method check-res($res) {
-    if $res.is-success {
-        True
-    } else {
-        warn "Error with response: {$res.status-line}: {$res.content}";
-        False
-    }
+    my $data = from-json $res.content;
+    $!access-token = $data<access_token>;
+    $.user-id = $data<user_id>;
 }
 
 # User Data
 
 method profile(Str :$user-id?) {
     my $id = $user-id // $.user-id;
-    my $res = $.get("/profile/" ~ $id);
-    $.check-res($res);
-    $res
+    $.get("/profile/" ~ $id)
 }
 
 method display-name(Str :$user-id?) {
     my $id = $user-id // $.user-id;
     my $res = $.get("/profile/" ~ $id ~ "/displayname");
-    $.check-res($res);
 
     my $data = from-json($res.content);
 
@@ -108,15 +89,13 @@ method display-name(Str :$user-id?) {
 }
 
 method change-display-name(Str:D $display-name!) {
-    my $res = $.put("/profile/" ~ $.user-id ~ "/displayname",
-                    displayname => $display-name);
-    return $.check-res($res);
+    $.put("/profile/" ~ $.user-id ~ "/displayname",
+          displayname => $display-name)
 }
 
 method avatar-url(Str :$user-id?) {
     my $id = $user-id // $.user-id;
     my $res = $.get("/profile/" ~ $id ~ "/avatar_url");
-    $.check-res($res);
     my $data = from-json($res.content);
 
     $data<avatar_url> // ""
@@ -128,20 +107,16 @@ multi method change-avatar(IO::Path $avatar) {
 }
 
 multi method change-avatar(Str:D $mxc-url!) {
-    my $res = $.put("/profile/" ~ $.user-id ~ "/avatar_url",
-                    avatar_url => $mxc-url);
-    return $.check-res($res);
+    $.put("/profile/" ~ $.user-id ~ "/avatar_url",
+          avatar_url => $mxc-url);
 }
 
 # Syncronization
 
 multi method sync() {
-    my $res = $.get("/sync",
-        timeout => 30000
-    );
+    my $res = $.get("/sync", timeout => 30000);
 
-    $.check-res($res);
-    $res
+    Matrix::Response::Sync.new($res.content)
 }
 
 multi method sync(Str :$sync-filter, Str :$since = "") {
@@ -151,8 +126,7 @@ multi method sync(Str :$sync-filter, Str :$since = "") {
         since => $since
     );
 
-    $.check-res($res);
-    $res
+    Matrix::Response::Sync.new($res.content)
 }
 
 multi method sync(:$sync-filter is copy, :$since = "") {
@@ -173,7 +147,6 @@ method rooms(Bool :$sync = False) {
     return @!rooms unless $sync;
     my $res = $.get("/sync", timeout => "30000");
 
-    return () unless $res.is-success;
     @!rooms = ();
     my $data = from-json($res.content);
     for $data<rooms><join>.kv -> $id, $json {
@@ -191,10 +164,6 @@ method rooms(Bool :$sync = False) {
 method joined-rooms() {
     my $res = $.get('/joined_rooms');
 
-    unless $res.is-success {
-        note "Error getting joined rooms: {$res.status}";
-        return ();
-    }
     my $data = from-json($res.content);
     return $data<joined_rooms>.Seq.map(-> $room-id {
         Matrix::Client::Room.new(
@@ -225,7 +194,6 @@ method upload(IO::Path $path, Str $filename?) {
         content-type => "image/png",
         filename => $fn,
     );
-    $.check-res($res);
     my $data = from-json($res.content);
     $data<content_uri> // "";
 }

@@ -30,13 +30,13 @@ method login(Str $username, Str $pass) returns Bool {
     return if $!logged;
 
     # Handle POST
-    my $data = to-json {
+    my $post-data = to-json {
         type => "m.login.password",
         user => $username,
         password => $pass
     };
 
-    my $res = $.post("/login", $data);
+    my $res = $.post("/login", $post-data);
     spurt $!auth-file, $res.content;
 
     my $data = from-json($res.content);

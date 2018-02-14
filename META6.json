@@ -2,7 +2,7 @@
     "perl"         : "6.c",
     "name"         : "Matrix::Client",
     "license"      : "Artistic-2.0",
-    "version"      : "0.1.2",
+    "version"      : "0.2.0",
     "description"  : "Matrix client for Perl 6",
     "tags"         : [ "Net", "Matrix" ],
     "depends"      : [
@@ -16,10 +16,12 @@
         "Test::META"
     ],
     "provides"     : {
-        "Matrix::Client"            : "lib/Matrix/Client.pm6",
-        "Matrix::Client::Room"      : "lib/Matrix/Client/Room.pm6",
-        "Matrix::Client::Requester" : "lib/Matrix/Client/Requester.pm6",
-        "Matrix::Client::Common"    : "lib/Matrix/Client/Common.pm6"
+        "Matrix::Client"               : "lib/Matrix/Client.pm6",
+        "Matrix::Response"             : "lib/Matrix/Response.pm6",
+        "Matrix::Client::Room"         : "lib/Matrix/Client/Room.pm6",
+        "Matrix::Client::Requester"    : "lib/Matrix/Client/Requester.pm6",
+        "Matrix::Client::Common"       : "lib/Matrix/Client/Common.pm6",
+        "Matrix::Client::Exception"    : "lib/Matrix/Client/Exception.pm6"
     },
     "authors"       : ["Matias Linares"],
     "support"       : {"source"   : "git://github.com/matiaslina/perl6-matrix-client.git"},

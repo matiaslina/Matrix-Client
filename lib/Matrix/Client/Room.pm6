@@ -51,6 +51,9 @@ method leave() {
 }
 
 method gist(--> Str) {
-    my $name = self.name();
+    "Room<name: {self.name()}, id: {self.id}>"
+}
+
+method Str(--> Str) {
     "Room<name: {self.name()}, id: {self.id}>"
 }

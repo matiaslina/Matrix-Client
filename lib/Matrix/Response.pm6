@@ -19,7 +19,7 @@ class Matrix::Response::RoomEvent is Matrix::Response::Event {
 
     method id { $.event_id }
     method timestamp { $!origin_server_ts }
-    method room-id { $.room-id }
+    method room-id { $.room_id }
 }
 
 class Matrix::Response::StateEvent is Matrix::Response::RoomEvent {

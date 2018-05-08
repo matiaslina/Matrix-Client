@@ -43,6 +43,15 @@ class Matrix::Response::RoomInfo {
     }
 }
 
+class Matrix::Response::InviteInfo {
+    has $.room-id is required;
+    has Matrix::Response::Event @.events;
+
+    method gist(--> Str) {
+        "<Matrix::Response::InviteState: $.room-id>"
+    }
+}
+
 sub gather-events($from) {
     gather for $from<events>.List -> $ev {
         take Matrix::Response::StateEvent.new(|$ev);
@@ -53,6 +62,7 @@ class Matrix::Response::Sync {
     has Str $.next-batch;
     has Matrix::Response::Event @.presence;
     has Matrix::Response::RoomInfo @.joined-rooms;
+    has Matrix::Response::InviteInfo @.invited-rooms;
 
     multi method new(Str $json) {
         return self.new(from-json($json));
@@ -62,6 +72,7 @@ class Matrix::Response::Sync {
         my $next-batch = $json<next_batch>;
         my Matrix::Response::Event @presence;
         my Matrix::Response::RoomInfo @joined-rooms;
+        my Matrix::Response::InviteInfo @invited-rooms;
         
         for $json<presence><events>.List -> $ev {
             @presence.push(Matrix::Response::Event.new(|$ev));
@@ -81,6 +92,14 @@ class Matrix::Response::Sync {
             ));
         }
 
-        return self.bless(:$next-batch, :@presence, :@joined-rooms);
+        for $json<rooms><invite>.kv -> $room-id, $data {
+            my @events = gather-events($data<invite_state>);
+            @invited-rooms.push(Matrix::Response::InviteInfo.new(
+                :$room-id, :@events
+            ));
+        }
+
+        return self.bless(:$next-batch, :@presence,
+                          :@joined-rooms, :@invited-rooms);
     }
 }

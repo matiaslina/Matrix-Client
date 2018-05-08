@@ -44,13 +44,12 @@ multi method post(Str $path, Str $json, :$media = False) {
     my $req = HTTP::Request.new(POST => $url,
                                 Content-Type => 'application/json');
     $req.add-content($json);
-
     return self!handle-error($!ua.request($req));
 }
 
 multi method post(Str $path, :$media = False, *%params) {
     my $json = to-json(%params);
-    nextwith($path, $json, :$media)
+    $.post($path, $json, :$media)
 }
 
 method post-bin(Str $path, Buf $buf, :$content-type) {

@@ -48,9 +48,9 @@ class Matrix::Response::InviteInfo {
     }
 }
 
-sub gather-events($from) {
+sub gather-events($room-id, $from) {
     gather for $from<events>.List -> $ev {
-        take Matrix::Response::StateEvent.new(|$ev);
+        take Matrix::Response::StateEvent.new(:room_id($room-id), |$ev);
     }
 }
 
@@ -75,12 +75,12 @@ class Matrix::Response::Sync {
         }
 
         for $json<rooms><join>.kv -> $room-id, $data {
-            my @state = gather-events($data<state>);
+            my @state = gather-events($room-id, $data<state>);
 
             my $timeline = Matrix::Response::Timeline.new(
                 limited => $data<timeline><limited>,
                 prev-batch => $data<timeline><prev_batch>,
-                events => gather-events($data<timeline>)
+                events => gather-events($room-id, $data<timeline>)
             );
 
             @joined-rooms.push(Matrix::Response::RoomInfo.new(
@@ -89,7 +89,7 @@ class Matrix::Response::Sync {
         }
 
         for $json<rooms><invite>.kv -> $room-id, $data {
-            my @events = gather-events($data<invite_state>);
+            my @events = gather-events($room-id, $data<invite_state>);
             @invited-rooms.push(Matrix::Response::InviteInfo.new(
                 :$room-id, :@events
             ));

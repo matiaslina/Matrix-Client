@@ -43,6 +43,8 @@ method login(Str $username, Str $pass) returns Bool {
     $!access-token = $data<access_token>;
     $!user-id = $data<user_id>;
     $!device-id = $data<device_id>;
+
+    True
 }
 
 method save-auth-data() {

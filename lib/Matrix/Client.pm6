@@ -115,8 +115,8 @@ multi method change-avatar(Str:D $mxc-url!) {
 
 # Syncronization
 
-multi method sync() {
-    my $res = $.get("/sync", timeout => 30000);
+multi method sync(:$since = "") {
+    my $res = $.get("/sync", timeout => 30000, since => $since);
     Matrix::Response::Sync.new($res.content)
 }
 

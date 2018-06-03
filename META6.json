@@ -2,7 +2,7 @@
     "perl"         : "6.c",
     "name"         : "Matrix::Client",
     "license"      : "Artistic-2.0",
-    "version"      : "0.2.1",
+    "version"      : "0.2.2",
     "description"  : "Matrix client for Perl 6",
     "tags"         : [ "Net", "Matrix" ],
     "depends"      : [

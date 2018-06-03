@@ -129,7 +129,7 @@ multi method sync(Str :$sync-filter, Str :$since = "") {
     Matrix::Response::Sync.new($res.content)
 }
 
-multi method sync(:$sync-filter is copy, :$since = "") {
+multi method sync(Hash :$sync-filter is copy, :$since = "") {
     $.sync(sync-filter => to-json($sync-filter), since => $since)
 }
 

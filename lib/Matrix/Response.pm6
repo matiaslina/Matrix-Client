@@ -5,10 +5,6 @@ unit module Matrix::Response;
 class Matrix::Response::Event {
     has %.content;
     has $.type is required;
-
-    method gist(--> Str) {
-        "Event<$.type>"
-    }
 }
 
 class Matrix::Response::RoomEvent is Matrix::Response::Event {

@@ -198,3 +198,31 @@ method upload(IO::Path $path, Str $filename?) {
     my $data = from-json($res.content);
     $data<content_uri> // "";
 }
+
+# Misc
+
+method run(Int :$sleep = 10, :$sync-filter? --> Supply) {
+    my $s = Supplier.new;
+    my $supply = $s.Supply;
+    my $since = "";
+
+    start {
+        loop {
+            my $sync = $.sync(:$since, :$sync-filter);
+            $since = $sync.next-batch;
+            say $since;
+
+            for $sync.invited-rooms -> $info {
+                $s.emit($info);
+            }
+
+            for $sync.joined-rooms -> $room {
+                for $room.timeline.events -> $event {
+                    $s.emit($event)
+                }
+            }
+            sleep $sleep;
+        }
+    }
+    $supply
+}

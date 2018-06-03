@@ -1,3 +1,3 @@
 unit module Matrix::Client::Common;
 
-our $TXN-ID = 0;
+our $TXN-ID;

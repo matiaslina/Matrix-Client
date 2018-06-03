@@ -21,7 +21,7 @@ submethod BUILD(:$!home-server!, :$!auth-file = 'auth') {
         $!access-token = $data<access_token>;
         $!user-id = $data<user_id>;
         $!device-id = $data<device_id>;
-        $Matrix::Client::Common::TXN-ID = $data<txn_id> // 0;
+        $Matrix::Client::Common::TXN-ID = now.Int;
         $!logged = True;
     }
 }
@@ -115,7 +115,6 @@ multi method change-avatar(Str:D $mxc-url!) {
 
 multi method sync() {
     my $res = $.get("/sync", timeout => 30000);
-
     Matrix::Response::Sync.new($res.content)
 }
 

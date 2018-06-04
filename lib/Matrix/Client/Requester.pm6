@@ -6,11 +6,12 @@ use Matrix::Client::Exception;
 
 unit role Matrix::Client::Requester;
 
-has $!ua = HTTP::UserAgent.new;
 has $.home-server is required;
+has $.access-token = "";
+
+has $!ua = HTTP::UserAgent.new;
 has $!client-endpoint = "/_matrix/client/r0";
 has $!url-prefix = "";
-has $!access-token = "";
 has $!sync-since = "";
 
 method !handle-error($response) {
@@ -21,8 +22,12 @@ method !handle-error($response) {
     $response
 }
 
+method !access-token-arg {
+    $!access-token ?? "access_token=$!access-token" !! ''
+}
+
 method get(Str $path, :$media = False, *%data) {
-    my $q = "$path?access_token=$!access-token";
+    my $q = "$path?{self!access-token-arg}";
     for %data.kv -> $k,$v {
         $q ~= "&$k=$v" if $v.so;
     }
@@ -40,7 +45,7 @@ method base-url(Bool :$media? = False --> Str) {
 }
 
 multi method post(Str $path, Str $json, :$media = False) {
-    my $url = $.base-url(:$media) ~ $path ~ "?access_token=$!access-token";
+    my $url = $.base-url(:$media) ~ $path ~ "?{self!access-token-arg}";
     my $req = HTTP::Request.new(POST => $url,
                                 Content-Type => 'application/json');
     $req.add-content($json);
@@ -53,12 +58,12 @@ multi method post(Str $path, :$media = False, *%params) {
 }
 
 method post-bin(Str $path, Buf $buf, :$content-type) {
-    my $req = POST($.base-url(:media) ~ $path ~ "?access_token=$!access-token", content => $buf, Content-Type => $content-type);
+    my $req = POST($.base-url(:media) ~ $path ~ "?{self!access-token-arg}", content => $buf, Content-Type => $content-type);
     return self!handle-error($!ua.request($req));
 }
 
 multi method put(Str $path, Str $json) {
-    my $req = HTTP::Request.new(PUT => $.base-url() ~ $path ~ "?access_token=$!access-token",
+    my $req = HTTP::Request.new(PUT => $.base-url() ~ $path ~ "?{self!access-token-arg}",
                                 Content-Type => 'application/json');
     $req.add-content($json);
     return self!handle-error($!ua.request($req))

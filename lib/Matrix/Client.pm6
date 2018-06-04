@@ -8,57 +8,36 @@ use Matrix::Client::Requester;
 
 unit class Matrix::Client does Matrix::Client::Requester;
 
-has Str $.user-id;
 has Str $.device-id;
-has Str $!auth-file;
-has $!logged = False;
+has Str $!user-id;
 has @!rooms;
 has @!users;
 
-submethod BUILD(:$!home-server!, :$!auth-file = 'auth') {
-    if $!auth-file.IO.e {
-        my $data = from-json(slurp $!auth-file);
-        $!access-token = $data<access_token>;
-        $!user-id = $data<user_id>;
-        $!device-id = $data<device_id>;
-        $Matrix::Client::Common::TXN-ID = now.Int;
-        $!logged = True;
-    }
+submethod TWEAK {
+    $Matrix::Client::Common::TXN-ID = now.Int;
 }
 
-method login(Str $username, Str $pass) returns Bool {
-    return if $!logged;
 
-    # Handle POST
-    my $post-data = to-json {
+method login(Str :$username, Str :$password, Str :$device-id?) {
+    my $post-data = {
         type => "m.login.password",
         user => $username,
-        password => $pass
+        password => $password
     };
 
-    my $res = $.post("/login", $post-data);
-    spurt $!auth-file, $res.content;
+    if $!device-id {
+        $post-data<device_id> = $!device-id;
+    }
 
+    my $res = $.post("/login", to-json($post-data));
     my $data = from-json($res.content);
+
     $!access-token = $data<access_token>;
     $!user-id = $data<user_id>;
     $!device-id = $data<device_id>;
-
-    True
-}
-
-method save-auth-data() {
-    my %data = 
-        access_token => $!access-token,
-        user_id => $.user-id,
-        device_id => $.device-id,
-        txn_id => $Matrix::Client::Common::TXN-ID;
-
-    spurt $!auth-file, to-json(%data);
 }
 
 method logout() {
-    unlink $!auth-file;
     $.post("/logout")
 }
 
@@ -71,18 +50,18 @@ method register($username, $password, Bool :$bind-email? = False) {
                     });
     my $data = from-json $res.content;
     $!access-token = $data<access_token>;
-    $.user-id = $data<user_id>;
+    $!user-id = $data<user_id>;
 }
 
 # User Data
 
 method profile(Str :$user-id?) {
-    my $id = $user-id // $.user-id;
-    $.get("/profile/" ~ $id)
+    my $id = $user-id // $!user-id;
+    from-json($.get("/profile/" ~ $id).content);
 }
 
 method display-name(Str :$user-id?) {
-    my $id = $user-id // $.user-id;
+    my $id = $user-id // $!user-id;
     my $res = $.get("/profile/" ~ $id ~ "/displayname");
 
     my $data = from-json($res.content);
@@ -91,12 +70,12 @@ method display-name(Str :$user-id?) {
 }
 
 method change-display-name(Str:D $display-name!) {
-    $.put("/profile/" ~ $.user-id ~ "/displayname",
+    so $.put("/profile/" ~ $!user-id ~ "/displayname",
           displayname => $display-name)
 }
 
 method avatar-url(Str :$user-id?) {
-    my $id = $user-id // $.user-id;
+    my $id = $user-id // $!user-id;
     my $res = $.get("/profile/" ~ $id ~ "/avatar_url");
     my $data = from-json($res.content);
 
@@ -109,7 +88,7 @@ multi method change-avatar(IO::Path $avatar) {
 }
 
 multi method change-avatar(Str:D $mxc-url!) {
-    $.put("/profile/" ~ $.user-id ~ "/avatar_url",
+    $.put("/profile/" ~ $!user-id ~ "/avatar_url",
           avatar_url => $mxc-url);
 }
 

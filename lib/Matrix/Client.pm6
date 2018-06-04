@@ -92,6 +92,16 @@ multi method change-avatar(Str:D $mxc-url!) {
           avatar_url => $mxc-url);
 }
 
+method whoami {
+    unless $!user-id {
+        my $res = $.get('/account/whoami');
+        my $data = from-json($res.content);
+        $!user-id = $data<user_id>;
+    }
+
+    $!user-id
+}
+
 # Syncronization
 
 multi method sync(:$since = "") {

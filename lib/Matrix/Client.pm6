@@ -149,34 +149,15 @@ method create-room(
 }
 
 method join-room($room-id!) {
-    $.post("/rooms/$room-id/join")
+    $.post("/join/$room-id")
 }
 
 method leave-room($room-id) {
     $.post("/rooms/$room-id/leave");
 }
 
-method rooms(Bool :$sync = False) {
-    return @!rooms unless $sync;
-    my $res = $.get("/sync", timeout => "30000");
-
-    @!rooms = ();
-    my $data = from-json($res.content);
-    for $data<rooms><join>.kv -> $id, $json {
-        @!rooms.push(Matrix::Client::Room.new(
-            id => $id,
-            json => $json,
-            home-server => $!home-server,
-            access-token => $!access-token
-        ));
-    }
-
-    @!rooms
-}
-
 method joined-rooms() {
     my $res = $.get('/joined_rooms');
-
     my $data = from-json($res.content);
     return $data<joined_rooms>.Seq.map(-> $room-id {
         Matrix::Client::Room.new(
@@ -193,9 +174,12 @@ method public-rooms() {
 
 method send(Str $room-id, Str $body, :$type? = "m.text") {
     $Matrix::Client::Common::TXN-ID++;
-    $.put("/rooms/$room-id/send/m.room.message/{$Matrix::Client::Common::TXN-ID}",
-          msgtype => $type, body => $body
-    )
+    my $res = $.put(
+        "/rooms/$room-id/send/m.room.message/{$Matrix::Client::Common::TXN-ID}",
+        msgtype => $type, body => $body
+    );
+
+    from-json($res.content)<event_id>
 }
 
 # Media

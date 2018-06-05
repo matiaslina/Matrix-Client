@@ -43,7 +43,12 @@ method messages() {
 
 method send(Str $body!, Str :$type? = "m.text") {
     $Matrix::Client::Common::TXN-ID++;
-    $.put("/send/m.room.message/{$Matrix::Client::Common::TXN-ID}", msgtype => $type, body => $body)
+    my $res = $.put(
+        "/send/m.room.message/{$Matrix::Client::Common::TXN-ID}",
+        msgtype => $type, body => $body
+    );
+
+    from-json($res.content)<event_id>
 }
 
 method leave() {

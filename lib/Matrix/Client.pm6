@@ -125,6 +125,29 @@ multi method sync(Hash :$sync-filter is copy, :$since = "") {
 
 # Rooms
 
+method create-room(
+    Bool :$public = False,
+    *%args --> Matrix::Client::Room
+) {
+    my %params;
+
+    for %args.kv -> $key, $value {
+        %params{$key.subst('-', '_')} = $value;
+    }
+
+    if 'visibility' ~~ %params {
+        %params<visibility> = $public;
+    }
+
+    my $res = from-json($.post('/createRoom', |%params).content);
+
+    Matrix::Client::Room.new(
+        id => $res<room_id>,
+        access-token => self.access-token,
+        home-server => self.home-server
+    )
+}
+
 method join-room($room-id!) {
     $.post("/rooms/$room-id/join")
 }

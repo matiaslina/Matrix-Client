@@ -18,7 +18,11 @@ submethod TWEAK {
 }
 
 
-method login(Str :$username, Str :$password, Str :$device-id?) {
+multi method login(Str $username, Str $password) {
+    $.login(:$username, :$password);
+}
+
+multi method login(Str :$username, Str :$password) {
     my $post-data = {
         type => "m.login.password",
         user => $username,

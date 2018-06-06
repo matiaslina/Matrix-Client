@@ -160,7 +160,7 @@ method leave-room($room-id) {
     $.post("/rooms/$room-id/leave");
 }
 
-method joined-rooms() {
+method joined-rooms(--> Seq) {
     my $res = $.get('/joined_rooms');
     my $data = from-json($res.content);
     return $data<joined_rooms>.Seq.map(-> $room-id {

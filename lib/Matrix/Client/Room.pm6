@@ -56,9 +56,9 @@ method leave() {
 }
 
 method gist(--> Str) {
-    "Room<name: {self.name()}, id: {self.id}>"
+    "Room<id: {self.id}>"
 }
 
 method Str(--> Str) {
-    "Room<name: {self.name()}, id: {self.id}>"
+    "Room<id: {self.id}>"
 }

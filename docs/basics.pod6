@@ -1,0 +1,99 @@
+=begin pod
+
+=head1 Basic tutorial
+
+=head2 Client creation
+
+The first thing to do is create a C<Matrix::Client> pointing to
+the homeserver, and C<login> into it.
+
+    my Matrix::Client $client .= new:
+        :home-server<https://matrix.org>;
+    $client.login($username, $password);
+
+In case you have an access-token, you can pass it as a parameter
+to C<new>. In this case is not necessary to call C<login>
+
+    my Matrix::Client $client .= new:
+        :home-server<https://matrix.org>,
+        :access-token($access-token);
+
+=head2 Syncing
+
+Calling sync will return a C<Matrix::Response::Sync> that abstract the
+response from the server. This structure should have all the information
+from the server like:
+
+=item presence
+=item joined rooms
+=item room invites
+
+It should be noted that the C<.next-batch> will have the C<:since> argument
+that is passed to the next C<sync>. If not provided, the response will have
+repeated data.
+
+    my $response = $client.sync;
+    my $since = $response.next-batch;
+
+    # print all messages
+    for $response.joined-rooms -> $room {
+        for $room.timeline.events
+                 .grep(*.type eq 'm.room.message') -> $msg {
+            $msg.content<body>.say;
+        }
+    }
+
+    # Sync again with the since parameter
+    my $new-response = $client.sync(:$since);
+
+There's a C<filter> argument that you could use to filter the response. To
+see available parameters to the filter you can go
+L<here|https://matrix.org/docs/spec/client_server/r0.3.0.html#post-matrix-client-r0-user-userid-filter>.
+
+    # limit the messages per room to 1
+
+    # Passing a hash.
+    my $response = $client.sync(
+        filter => { room => timeline => limit => 1}
+    );
+
+    # Passing a json as parameter
+    my $response = $client.sync(
+        filter => '{"room":{"timeline":{ "limit": 1}}}'
+    );
+
+As for now, you can't send a filter_id of an already created filter.
+
+=head2 Sending messages
+
+There's two ways to send messages to a channel.
+
+=item C<.send($room-id, $message, :$type)> from C<Matrix::Client>
+=item C<.send($message, :$type)> from C<Matrix::Client::Room>
+
+Here's an example of the two:
+
+    my $room = $client.joined-rooms.first;
+    $client.send($room.id, 'Hello');
+    $room.send('hello');
+
+=head2 Async loop
+
+The client supports an async loop that can replace a C<loop { $client.sync; … }>
+since it's a common thing to do. It starts a new thread that runs that loop
+sending all the events through a C<Supplier>.
+
+    my $supply = $client.run();
+
+    react {
+        whenever $supply -> $s {
+            when $s ~~ Matrix::Response::InviteInfo {
+                say "Got an invite from {$s.room-id}
+            }
+            when $s ~~ Matrix::Response::RoomInfo {
+                say "Got a room event from {$s.room-id}
+            }
+        }
+    }
+
+=end pod

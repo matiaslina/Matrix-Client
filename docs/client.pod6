@@ -1,0 +1,207 @@
+=begin pod
+
+=TITLE class Matrix::Client
+
+=SUBTITLE Client API for Matrix
+
+    class Matrix::Client does Matrix::Client::Requester {}
+
+The main object in the module. The C<Matrix::Client> is used to talk to a
+Matrix home server abstracting the HTTP requests.
+
+The client is used for example to join rooms, receive/send messages, etc.
+
+On server errors, all methods will throw a L<X::Matrix::Response> exception.
+
+=head1 Methods
+
+=head2 new
+
+    sub new(Str :$home-server, Str :$access-token?, Str :$device-id?)
+
+Creates a C<Matrix::Client> pointing to a home server. If no C<$access-token> is
+passed to the constructor, the client needs to call L<login> to make authorized
+calls to the API.
+
+=head2 login
+
+    multi method login(Str $username, Str $password)
+    multi method login(Str :$username, Str :$password)
+
+Logs in with the C<$username> and C<password>. If C<device-id> is setted
+before the C<login> call, it will register that C<device-id> in the server
+invalidating any previously associated access token to this C<device-id>.
+Otherwise the home server will auto-generate one.
+
+On a failed login attempt, a L<X::Matrix::Response> is raised with a code
+of C<“M_FORBIDDEN”>
+
+=head2 logout
+
+    method logout()
+
+Invalidates the access token, so that it can no longer be used for authorization.
+
+=head2 register
+
+    method register($username, $password, Bool :$bind-email? = False)
+
+Register a B<user> account in the home server. 
+
+If C<$bind-email> is true, the server binds the email used for authentication
+to the Matrix ID with the ID Server.
+
+In case there's an error with the registration, a L<X::Matrix::Response> is raised
+with one of the following C<code>s:
+
+=item C<M_USER_IN_USE> The desired user ID is already taken.
+=item C<M_INVALID_USERNAME>: The desired user ID is not a valid user name.
+=item C<M_EXCLUSIVE>: The desired user ID is in the exclusive namespace claimed by an application service.
+
+=head2 profile
+
+    method profile(Str :$user-id?)
+
+Get the combined profile information for this user. With no C<$user-id>
+L<profile> will provide the profile data associated with the client
+account.
+
+It returns a C<Hash> that can contains C<avatar_url> and/or C<displayname>.
+
+=head2 display-name
+
+    method display-name(Str :$user-id?)
+
+Get the display-name of the C<$user-id>. With no C<$user-id> it will return
+the display name associated with the client account.
+
+=head2 change-display-name 
+
+    method change-display-name(Str:D $display-name!)
+
+Change the client account display name.
+
+=head2 avatar-url
+
+    method avatar-url(Str :$user-id?)
+
+Get the avatar url for a given C<$user-id>. With no C<$user-id> it will return
+the avatar url associated with the client account.
+
+=head2 change-avatar
+
+    multi method change-avatar(IO::Path $avatar)
+    multi method change-avatar(Str:D $mxc-url!)
+
+Changes the avatar for the client account.
+
+Passing a C<IO::Path> to the method will upload the image to the server
+and then set that uploaded image as avatar.
+
+=head2 whoami
+
+    method whoami
+
+Returns the user id of the client account.
+
+=head2 sync
+
+    multi method sync(:$since = "")
+    multi method sync(Str :$sync-filter, Str :$since = "")
+    multi method sync(Hash :$sync-filter is copy, :$since = "")
+
+Gets the client's state with the latest state on the server. It returns
+a L<Matrix::Response::Sync> with the initial snapshot or delta.
+
+C<$since> is necessary to get the incremental deltas to the states. The C<$since>
+value is retrieved from the C<next-batch> in the L<Matrix::Response::Sync>.
+
+The C<sync-filter> is the filter that will be applied to the sync. It will encode
+it to a JSON string if it isn't a C<Str> already. For more information about
+filters you can check the L<official spec|https://matrix.org/docs/spec/client_server/r0.3.0.html#filtering>
+
+    # Filter to apply to the sync.
+    my $sync-filter = { room => timeline => limit => 1 };
+    my $sync = $client.sync(:$sync-filter);
+    # Get the next batch to get a delta on the sync.
+    my $since = $sync.next-batch;
+
+    # This will return the same $sync as above.
+    my $same-sync = $client.sync(:$sync-filter);
+    # This won't
+    my $new-sync = $client.sync(:$sync-filter, :$since);
+
+
+=head2 create-room
+
+    method create-room(
+        Bool :$public = False,
+        *%args --> Matrix::Client::Room
+    )
+
+Create a room in the home server. Possible arguments for C<*%args> are:
+
+=item visibility: C<“public”> or C<“private”>.
+=item room_alias_name: A C<Str> for a room alias.
+=item name: A C<Str> for the room name.
+=item topic: A C<Str> for the room topic.
+=item invite: A list of C<Str> of user ids to invite to the room.
+=item preset: C<“private_chat”>, C<“trusted_private_chat”> or C<“public_chat”>.
+=item is_direct: A C<Bool> to make the room as a direct chat.
+
+The parameters can be typed with C<-> instead C<_> for style purposes, the method
+will change those characters to match the Matrix API. The list can be found
+L<here|https://matrix.org/docs/spec/client_server/r0.3.0.html#post-matrix-client-r0-createroom>
+
+The C<$public> argument sets the C<visibility> to “public”, giving precedence to the C<visibility>
+in C<%*args>.
+
+=head2 join-room
+
+    method join-room($room-id!)
+
+Joins a room.
+
+The C<$room-id> can be either a room id (!superhash:server) or an alias (#alias:server)
+since it uses the L</join/{roomIdOrAlias}|https://matrix.org/docs/spec/client_server/r0.3.0.html#post-matrix-client-r0-join-roomidoralias>
+endpoint.
+
+=head2 leave-room
+
+    method leave-room($room-id)
+
+Leaves a room.
+
+The C<$room-id> must be a room id (!superhash:server).
+
+=head2 joined-rooms
+
+    method joined-rooms(--> Seq)
+
+Returns a C<Seq> with the joined rooms within the client.
+
+=head2 public-rooms
+
+    method public-rooms()
+
+Lists the public rooms on the server. 
+
+B<Note>: Right now this is returning the parsed JSON from the response.
+
+=head2 send
+
+    method send(Str $room-id, Str $body, :$type? = "m.text")
+
+Send a message event to a room.
+
+C<$room-id> must be a room id with the form “!hast:server”. As for now the C<send> method
+only sends C<“m.text”> events. In the future it will be extended to support all the
+L<Room events|https://matrix.org/docs/spec/client_server/r0.3.0.html#room-events>.
+
+=head2 upload
+
+    method upload(IO::Path $path, Str $filename?)
+
+Uploads a file to the server. It returns the MXC URI to the uploaded content.
+
+=end pod

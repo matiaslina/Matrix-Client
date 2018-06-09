@@ -210,7 +210,6 @@ method run(Int :$sleep = 10, :$sync-filter? --> Supply) {
         loop {
             my $sync = $.sync(:$since, :$sync-filter);
             $since = $sync.next-batch;
-            say $since;
 
             for $sync.invited-rooms -> $info {
                 $s.emit($info);

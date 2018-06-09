@@ -60,12 +60,12 @@ method register($username, $password, Bool :$bind-email? = False) {
 # User Data
 
 method profile(Str :$user-id?) {
-    my $id = $user-id // $!user-id;
+    my $id = $user-id // $.whoami;
     from-json($.get("/profile/" ~ $id).content);
 }
 
 method display-name(Str :$user-id?) {
-    my $id = $user-id // $!user-id;
+    my $id = $user-id // $.whoami;
     my $res = $.get("/profile/" ~ $id ~ "/displayname");
 
     my $data = from-json($res.content);
@@ -74,12 +74,12 @@ method display-name(Str :$user-id?) {
 }
 
 method change-display-name(Str:D $display-name!) {
-    so $.put("/profile/" ~ $!user-id ~ "/displayname",
+    so $.put("/profile/" ~ $.whoami ~ "/displayname",
           displayname => $display-name)
 }
 
 method avatar-url(Str :$user-id?) {
-    my $id = $user-id // $!user-id;
+    my $id = $user-id // $.whoami;
     my $res = $.get("/profile/" ~ $id ~ "/avatar_url");
     my $data = from-json($res.content);
 
@@ -92,7 +92,7 @@ multi method change-avatar(IO::Path $avatar) {
 }
 
 multi method change-avatar(Str:D $mxc-url!) {
-    $.put("/profile/" ~ $!user-id ~ "/avatar_url",
+    $.put("/profile/" ~ $.whoami ~ "/avatar_url",
           avatar_url => $mxc-url);
 }
 

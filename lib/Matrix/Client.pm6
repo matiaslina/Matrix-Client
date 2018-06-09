@@ -108,9 +108,8 @@ method whoami {
 
 # Syncronization
 
-multi method sync(:$since = "") {
-    my $res = $.get("/sync", timeout => 30000, since => $since);
-    Matrix::Response::Sync.new($res.content)
+multi method sync(Hash :$sync-filter is copy, :$since = "") {
+    $.sync(sync-filter => to-json($sync-filter), since => $since)
 }
 
 multi method sync(Str :$sync-filter, Str :$since = "") {
@@ -123,8 +122,9 @@ multi method sync(Str :$sync-filter, Str :$since = "") {
     Matrix::Response::Sync.new($res.content)
 }
 
-multi method sync(Hash :$sync-filter is copy, :$since = "") {
-    $.sync(sync-filter => to-json($sync-filter), since => $since)
+multi method sync(:$since = "") {
+    my $res = $.get("/sync", timeout => 30000, since => $since);
+    Matrix::Response::Sync.new($res.content)
 }
 
 # Rooms

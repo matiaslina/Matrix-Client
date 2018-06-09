@@ -104,6 +104,20 @@ and then set that uploaded image as avatar.
 
 Returns the user id of the client account.
 
+=head2 presence
+
+    method presence(Matrix::Client:D: $user-id? --> Matrix::Response::Presence)
+
+Query the presence status for an user. if no C<$user-id> is passed as argument,
+it will return the presence of the user associated with the client.
+
+=head2 set-presence
+
+    method set-presence(Matrix::Client:D: Str $presence, Str :$status-message = "")
+
+Sets the manually the presence of the client account. The C<$presence> argument
+must be C<“online”>, C<“offline”> or C<“unavailable”>.
+
 =head2 sync
 
     multi method sync(:$since = "")

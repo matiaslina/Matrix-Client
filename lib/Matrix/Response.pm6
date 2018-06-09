@@ -99,3 +99,17 @@ class Matrix::Response::Sync {
                           :@joined-rooms, :@invited-rooms);
     }
 }
+
+class Presence {
+    has Str $.presence is required;
+    has Int $.last-active-ago;
+    has Str $.status-message;
+    has Bool $.currently-active;
+
+    submethod BUILD(
+        Str :$!presence,
+        :last_active_ago(:$!last-active-ago) = 0,
+        :status_message(:$!status-message) = "",
+        :currently_active(:$!currently-active) = False
+    ) { }
+}

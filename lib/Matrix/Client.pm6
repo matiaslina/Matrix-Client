@@ -106,6 +106,17 @@ method whoami {
     $!user-id
 }
 
+method presence(Matrix::Client:D: $user-id? --> Matrix::Response::Presence) {
+    my $id = $user-id // $.whoami;
+    my $data = from-json($.get("/presence/$id/status").content);
+    Matrix::Response::Presence.new(|$data)
+}
+
+method set-presence(Matrix::Client:D: Str $presence, Str :$status-message = "") {
+    $.put("/presence/$.whoami/status",
+          :$presence, :status_msg($status-message));
+}
+
 # Syncronization
 
 multi method sync(Hash :$sync-filter is copy, :$since = "") {

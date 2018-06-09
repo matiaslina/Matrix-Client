@@ -10,13 +10,16 @@ the homeserver, and C<login> into it.
     my Matrix::Client $client .= new:
         :home-server<https://matrix.org>;
     $client.login($username, $password);
+    say $client.access-token;
 
 In case you have an access-token, you can pass it as a parameter
-to C<new>. In this case is not necessary to call C<login>
+to C<new>. In this case is not necessary to call C<login>.
 
     my Matrix::Client $client .= new:
         :home-server<https://matrix.org>,
         :access-token($access-token);
+
+    say $client.whoami;  # @yourusername:home-server
 
 =head2 Syncing
 
@@ -28,7 +31,7 @@ from the server like:
 =item joined rooms
 =item room invites
 
-It should be noted that the C<.next-batch> will have the C<:since> argument
+Beware that the C<.next-batch> will have the C<:since> argument
 that is passed to the next C<sync>. If not provided, the response will have
 repeated data.
 
@@ -54,19 +57,21 @@ L<here|https://matrix.org/docs/spec/client_server/r0.3.0.html#post-matrix-client
 
     # Passing a hash.
     my $response = $client.sync(
-        filter => { room => timeline => limit => 1}
+        sync-filter => { room => timeline => limit => 1}
     );
 
     # Passing a json as parameter
-    my $response = $client.sync(
-        filter => '{"room":{"timeline":{ "limit": 1}}}'
+    my $json-response = $client.sync(
+        sync-filter => '{"room":{"timeline":{ "limit": 1}}}'
     );
 
 As for now, you can't send a filter_id of an already created filter.
 
-=head2 Sending messages
+=head2 Sending events
 
-There's two ways to send messages to a channel.
+There's two ways to send events to a channel. The only event supported
+is C<m.room.message>
+
 
 =item C<.send($room-id, $message, :$type)> from C<Matrix::Client>
 =item C<.send($message, :$type)> from C<Matrix::Client::Room>
@@ -79,7 +84,7 @@ Here's an example of the two:
 
 =head2 Async loop
 
-The client supports an async loop that can replace a C<loop { $client.sync; … }>
+C<Matrix::Client> supports an async loop that can replace a C<loop { $client.sync; … }>
 since it's a common thing to do. It starts a new thread that runs that loop
 sending all the events through a C<Supplier>.
 
@@ -88,10 +93,10 @@ sending all the events through a C<Supplier>.
     react {
         whenever $supply -> $s {
             when $s ~~ Matrix::Response::InviteInfo {
-                say "Got an invite from {$s.room-id}
+                say "Got an invite from {$s.room-id}";
             }
-            when $s ~~ Matrix::Response::RoomInfo {
-                say "Got a room event from {$s.room-id}
+            when $s ~~ Matrix::Response::StateEvent {
+                say "Got a room event from {$s.room-id}";
             }
         }
     }

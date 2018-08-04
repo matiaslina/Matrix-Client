@@ -12,12 +12,8 @@ submethod TWEAK {
 }
 
 method !get-name() {
-    my $res = $.get('/state/m.room.name');
-    if $res.is-success {
-        $!name = from-json($res.content)<name>
-    } else {
-        warn "Error {$res.status-line}, content {$res.content}";
-    }
+    my $data = $.state('m.room.name');
+    $!name = $data<name>;
 }
 
 method name() {

@@ -7,17 +7,8 @@ unit class Matrix::Client::Room does Matrix::Client::Requester;
 has $!name;
 has $.id;
 
-multi submethod BUILD(Str :$!id!, :$!home-server!, :$!access-token!, :$json?) {
+submethod TWEAK {
     $!url-prefix = "/rooms/$!id";
-    
-    if so $json {
-        my @events = $json<state><events>.clone;
-        for @events -> $ev {
-            if $ev<type> eq "m.room.name" {
-                $!name = $ev<content><name>;
-            }
-        }
-    }
 }
 
 method !get-name() {

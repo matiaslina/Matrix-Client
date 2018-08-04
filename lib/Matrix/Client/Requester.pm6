@@ -14,7 +14,7 @@ has $!client-endpoint = "/_matrix/client/r0";
 has $!url-prefix = "";
 has $!sync-since = "";
 
-method !handle-error($response) {
+method !handle-error($response) is hidden-from-backtrace {
     unless $response.is-success {
         my $data = from-json($response.content);
         X::Matrix::Response.new(:code($data<errcode>), :error($data<error>)).throw;

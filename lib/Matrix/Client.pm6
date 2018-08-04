@@ -123,11 +123,11 @@ multi method sync(Hash :$sync-filter is copy, :$since = "") {
     $.sync(sync-filter => to-json($sync-filter), since => $since)
 }
 
-multi method sync(Str :$sync-filter, Str :$since = "") {
+multi method sync(Str:D :$sync-filter, Str :$since = "") {
     my $res = $.get("/sync",
         timeout => 30000,
-        filter => $sync-filter,
-        since => $since
+        :$sync-filter,
+        :$since
     );
 
     Matrix::Response::Sync.new($res.content)

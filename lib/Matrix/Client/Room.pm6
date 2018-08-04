@@ -1,6 +1,7 @@
 use JSON::Tiny;
 use Matrix::Client::Common;
 use Matrix::Client::Requester;
+use Matrix::Response;
 
 unit class Matrix::Client::Room does Matrix::Client::Requester;
 
@@ -38,12 +39,29 @@ method send(Str $body!, Str :$type? = "m.text") {
     from-json($res.content)<event_id>
 }
 
-method leave() {
-    $.post('/leave')
+multi method state(--> Seq) {
+    my $data = from-json($.get('/state').content);
+
+    gather for $data.List -> $event {
+        take Matrix::Response::StateEvent.new(:room-id($.id), |$event)
+    }
 }
 
-method gist(--> Str) {
-    "Room<id: {self.id}>"
+multi method state(Str $event-type) {
+    from-json($.get("/state/$event-type").content)
+}
+
+method send-state(Str:D $event-type, :$state-key = "", *%args --> Str) {
+    my $res = $.put(
+        "/state/$event-type/$state-key",
+        |%args
+    );
+    from-json($res.content)<event_id>
+}
+
+
+method leave() {
+    $.post('/leave')
 }
 
 method Str(--> Str) {

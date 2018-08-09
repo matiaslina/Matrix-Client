@@ -212,6 +212,30 @@ C<$room-id> must be a room id with the form “!hast:server”. As for now the C
 only sends C<“m.text”> events. In the future it will be extended to support all the
 L<Room events|https://matrix.org/docs/spec/client_server/r0.3.0.html#room-events>.
 
+=head2 get-room-id
+
+    method get-room-id($room-alias)
+
+Get the room id for an C<$room-alias>. The room alias must be in the form
+C<localname:domain>, otherwise it will raise a L<X::Matrix::Response> with
+the proper message and C<M_UNKNOWN> error code.
+
+If there's no room with the C<$room-alias> in the server directory, it will
+raise a L<L::Matrix::Response> with a C<M_NOT_FOUND> code.
+
+=head2 add-room-alias
+
+    method add-room-alias($room-id, $room-alias)
+
+Add the C<$room-alias> to the C<$room-id>.
+
+=head2 remove-room-alias
+
+    method remove-room-alias($room-alias)
+
+Remove a mapping of C<$room-alias> to room ID. The room ID isn't a must and
+the servers may choose to implement additional access control for this endpoint.
+
 =head2 upload
 
     method upload(IO::Path $path, Str $filename?)

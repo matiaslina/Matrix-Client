@@ -1,7 +1,7 @@
 use lib 'lib';
 use Test;
 use Matrix::Client;
-plan 4;
+plan 5;
 
 unless %*ENV<MATRIX_CLIENT_TEST_SERVER> {
     skip-rest 'No test server setted';
@@ -61,4 +61,37 @@ subtest 'sync' => {
            Matrix::Response::Sync, 'sync with Str sync-filter';
     isa-ok $client.sync(:sync-filter(room => timeline => limit => 1)),
            Matrix::Response::Sync, 'sync wit Hash sync-filter';
+}
+
+subtest 'directory' => {
+    plan 6;
+    my $alias = '#testing:localhost';
+    my $test-room = $client.create-room;
+
+    throws-like {
+        $client.get-room-id($alias);
+    }, X::Matrix::Response,
+       message => /M_NOT_FOUND/,
+       "raises with unknown alias";
+
+    lives-ok {
+        $client.add-room-alias($test-room.id, $alias)
+    }, 'can add an alias to the room';
+
+    lives-ok {
+        $client.get-room-id($alias);
+    }, 'can retrieve room with an alias';
+
+    is $client.get-room-id($alias), $test-room.id,
+       'good room when retrieve';
+
+    lives-ok {
+        $client.remove-room-alias($alias);
+    }, 'can remove the alias';
+
+    throws-like {
+        $client.get-room-id($alias);
+    }, X::Matrix::Response,
+       message => /M_NOT_FOUND/,
+       "Room not found after delete";
 }

@@ -197,6 +197,21 @@ method send(Str $room-id, Str $body, :$type? = "m.text") {
     from-json($res.content)<event_id>
 }
 
+method get-room-id($room-alias) {
+    my $res = $.get("/directory/room/$room-alias");
+
+    from-json($res.content)<room_id>
+}
+
+method add-room-alias($room-id, $room-alias) {
+    $.put("/directory/room/$room-alias",
+          room_id => $room-id);
+}
+
+method remove-room-alias($room-alias) {
+    $.delete("/directory/room/$room-alias");
+}
+
 # Media
 
 method upload(IO::Path $path, Str $filename?) {

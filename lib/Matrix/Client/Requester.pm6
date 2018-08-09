@@ -80,3 +80,11 @@ multi method put(Str $path, Str $json) {
 multi method put(Str $path, *%params) {
     self.put($path, to-json(%params))
 }
+
+method delete(Str $path) {
+    my $encoded-path = $path.subst('#', '%23');
+    my $req = HTTP::Request.new(
+        DELETE => $.base-url ~ $encoded-path ~ "?{self!access-token-arg}",
+        Content-Type => 'application/json');
+    return self!handle-error($!ua.request($req))
+}

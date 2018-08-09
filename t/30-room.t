@@ -80,15 +80,11 @@ subtest 'name' => {
 
     my $name = "Name room test";
     my $test-room = $client.create-room:
-    :creation_content({
-        "m.federate" => False
-    });
+        :creation_content({
+            "m.federate" => False
+        });
 
-    throws-like {
-        $test-room.name()
-    }, X::Matrix::Response,
-    message => /M_NOT_FOUND/,
-    '.name without name gives event not found';
+    is $test-room.name(), '';
 
     lives-ok {
         $test-room.send-state('m.room.name', :name($name))

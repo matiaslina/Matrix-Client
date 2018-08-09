@@ -13,6 +13,14 @@ submethod TWEAK {
 }
 
 method !get-name() {
+    CATCH {
+        when X::Matrix::Response {
+            .code ~~ /M_NOT_FOUND/
+            ?? ($!name = '')
+            !! fail
+        }
+        default { fail }
+    }
     my $data = $.state('m.room.name');
     $!name = $data<name>;
 }

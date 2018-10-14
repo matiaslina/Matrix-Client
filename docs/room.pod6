@@ -1,0 +1,68 @@
+=begin pod
+
+=TITLE class Matrix::Client::Room
+
+=SUBTITLE Room requester
+
+    class Matrix::Client::Room does Matrix::Client::Requester {}
+
+The C<Matrix::Client::Room> is a shortcut to all the C</rooms/:id> endpoints. It
+does the role as L<Matrix::Client::Requester> so one can instantiate a Room with
+the one's access token and the room id to make requests directly to this room
+without the need for a L<Matrix::Client>.
+
+=head1 Example
+
+    my $room-id = "!pGOClvZafMH:matrix.server.com";
+    my $home-server = "https://matrix.server.com";
+    my $access-token = "…";
+
+    my Matrix::Client::Room $room .= new(
+        :$access-token,
+        :$home-server,
+        :id($room-id)
+    );
+
+    say $room.name;
+
+=head1 Methods
+
+=head2 name
+
+    method name(--> Str)
+
+Returns the name of the room. If no C<m.room.name> was emmited (i.e.: no name
+was set for this room), then an empty string is returned.
+
+=head2 send
+
+    method send(Str $body!, Str :$type? = "m.text")
+
+Sends a message to the room. It will return the C<event_id> for this message.
+
+=head2 state
+
+    multi method state(--> Seq)
+    multi method state(Str $event-type)
+
+Get the state events for the current state of a room. it will return a C<Seq>
+for every event on that room.
+
+If an C<$event-type> is passed, the return value will be the value of that
+single event.
+
+=head2 send-state
+
+    method send-state(Str:D $event-type, :$state-key = "", *%args --> Str)
+
+Send a state event to the server. The event will be overwritten if the
+C<$event-type>, C<$state-key> and the arguments all match with a state in the
+server.
+
+It will return the C<event_id> for this state change.
+
+=head2 leave
+
+    method leave()
+
+Leaves the room.

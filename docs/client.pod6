@@ -242,4 +242,34 @@ the servers may choose to implement additional access control for this endpoint.
 
 Uploads a file to the server. It returns the MXC URI to the uploaded content.
 
+=head2 run
+
+    method run(Int :$sleep = 10, :$sync-filter? --> Supply)
+
+Returns a C<Supply> that emits L<Matrix::Response::StateEvent> with the last
+events. The C<$sleep> parameter is to sleep for that amount of seconds before
+making a L<sync> request again. The C<$sync-filter> is the same parameter that
+will be passed to L<sync> method to filter out the useful events.
+
+This can be useful to turn something like:
+
+    my $since;
+    loop {
+        $response = $client.sync(:$since);
+        $since = $response.next-batch;
+
+        for $response.joined-rooms -> $room {
+            for $room.timeline.event -> $event {
+                # Do something useful with $event
+            }
+        }
+    }
+
+into:
+
+    my $sup = $client.run();
+    react whenever $sup -> $event { 
+        # Do something useful with $event
+    }
+
 =end pod

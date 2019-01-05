@@ -66,3 +66,5 @@ It will return the C<event_id> for this state change.
     method leave()
 
 Leaves the room.
+
+=end pod

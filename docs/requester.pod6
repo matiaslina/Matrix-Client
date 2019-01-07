@@ -1,0 +1,70 @@
+=begin pod
+
+=TITLE role Matrix::Client::Requester
+
+=SUBTITLE Role for HTTP requests
+
+=for code
+role Matrix::Requester { }
+
+Role that gives the base API for objects that interacts to the matrix server. The
+attributes that can be set can be:
+
+=head1 Attributes
+
+=head2 Str home-server
+
+The url of the home-server.
+
+=head2 Str access-token
+
+access token to make authorized calls to the matrix server.
+
+=head2 Str url-prefix
+
+Prefix to all the paths used in the methods.
+
+=head1 Methods
+
+=head2 get
+
+=for code
+method get(Str $path, :$media = False, *%data) 
+
+Do a GET to C<$path>.
+
+All the C<*%data> is used to build the query params for the url.
+
+=head2 post
+
+=for code
+multi method post(Str $path, Str $params, :$media = False)
+multi method post(Str $path, :$media = False, *%params)
+
+Do a POST to C<$path> with C<$params> as JSON body. With the
+named C<*%params>, those are parameters are converted into JSON.
+
+=head2 post-bin
+
+=for code
+method post-bin(Str $path, Buf $buf, :$content-type)
+
+Do a POST to C<$path> with binary data in the body.
+
+=head2 put
+
+=for code
+multi method put(Str $path, Str $params)
+multi method put(Str $path, *%params)
+
+Do a PUT to C<$path> with C<$params> as JSON body. With the named
+C<*%params>, those parameters are converted into JSON.
+
+=head2 delete
+
+=for code
+method delete(Str $path)
+
+Do a DELETE to C<$path>.
+
+=end pod

@@ -4,8 +4,8 @@
 
 =SUBTITLE Error querying the matrix server
 
-=for code
-class X::Matrix::Response is Exception {}
+
+          class X::Matrix::Response is Exception {}
 
 Error class when the matrix server returns an error code (4XX).
 

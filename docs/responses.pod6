@@ -6,8 +6,8 @@
 
 =head1 Event
 
-=for code
-class Matrix::Response::Event { }
+
+       class Matrix::Response::Event { }
 
 Common contents of a response.
 
@@ -18,8 +18,8 @@ Common contents of a response.
 
 =head1 RoomEvent
 
-=for code
-class Matrix::Response::RoomEvent is Matrix::Response::Event { }
+
+       class Matrix::Response::RoomEvent is Matrix::Response::Event { }
 
 A single event for a room
 
@@ -53,8 +53,8 @@ returns the room_id
 
 =head1 StateEvent
 
-=for code
-class Matrix::Response::StateEvent is Matrix::Response::RoomEvent { }
+
+       class Matrix::Response::StateEvent is Matrix::Response::RoomEvent { }
 
 =head2 Mapped keys
 
@@ -63,8 +63,8 @@ class Matrix::Response::StateEvent is Matrix::Response::RoomEvent { }
 
 =head1 Timeline
 
-=for code
-class Matrix::Response::Timeline { }
+
+       class Matrix::Response::Timeline { }
 
 =head2 Mapped keys
 
@@ -75,8 +75,8 @@ class Matrix::Response::Timeline { }
 
 =head1 RoomInfo
 
-=for code
-class Matrix::Response::RoomInfo { }
+
+       class Matrix::Response::RoomInfo { }
 
 =head2 Mapped keys
 
@@ -86,8 +86,8 @@ class Matrix::Response::RoomInfo { }
 
 =head1 InviteInfo
 
-=for code
-class Matrix::Response::InviteInfo { }
+
+       class Matrix::Response::InviteInfo { }
 
 =head2 Mapped keys
 
@@ -96,8 +96,8 @@ class Matrix::Response::InviteInfo { }
 
 =head1 Sync
 
-=for code
-class Matrix::Response::Sync { }
+
+       class Matrix::Response::Sync { }
 
 =head2 Mapped keys
 
@@ -109,8 +109,8 @@ class Matrix::Response::Sync { }
 
 =head1 Presence
 
-=for code
-class Matrix::Response::Presence { }
+
+       class Matrix::Response::Presence { }
 
 =head2 Mapped keys
 

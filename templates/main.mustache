@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="{{ lang }}">
+    <head>
+        <title>{{{ title }}}</title>
+        <meta charset="UTF-8" />
+        <link rel="stylesheet" href="https://code.cdn.mozilla.net/fonts/fira.css">
+        <style>
+        kbd { font-family: "Droid Sans Mono", "Luxi Mono", "Inconsolata", monospace }
+        samp { font-family: "Terminus", "Courier", "Lucida Console", monospace }
+        u { text-decoration: none }
+        .nested {
+            margin-left: 3em;
+        }
+        aside, u { opacity: 0.7 }
+        a[id^="fn-"]:target { background: #ff0 }
+        </style>
+        <link rel="stylesheet" href="https://deprecated.org/raw/s/styles.css">
+        {{# metadata }}{{{ metadata }}}{{/ metadata }}
+        {{{ head }}}
+    </head>
+    <body class="pod">
+      <div id="___top"></div>
+      <div id="wrapper">
+      <header class="header">
+        <a class="box" href="/">
+          <img src="https://deprecated.org/raw/i/perl6-matrix@100.png" alt='perl6-matrix' />
+          <h1 id="title">
+            Perl 6 Matrix Client
+          </h1>
+        </a>
+      </header>
+
+      <aside class="menu">
+        <nav><h3><a href="index.html">Home</a></h3></nav>
+        {{# toc }}{{{ toc }}}{{/ toc }}
+        <nav>
+          <h3>See also</h3>
+          <ul>
+            <li><a href="basics.html">Basics</a></li>
+            <li><a href="usage.html">Usage</a></li>
+            <li><b><u>API</u></b></li>
+              <ul>
+                <li><a href="client.html">Matrix::Client</a></li>
+                <li><a href="responses.html">Matrix::Responses</a></li>
+                <li><a href="room.html">Matrix::Client::Room</a></li>
+                <li><a href="x-matrix-response.html">X::Matrix</a></li>
+                <li><a href="requester.html">Matrix::Requester</a></li>
+              </ul>
+          </ul>
+        </nav>
+      </aside>
+
+      <div class="content">
+        {{# title }}<h1 class='title'>{{{ title }}}</h1>{{/ title }}
+        {{# subtitle }}<p class='subtitle'>{{{ subtitle }}}</p>{{/ subtitle }}
+        <div class="pod-body{{^ toc }} no-toc{{/ toc }}">
+          {{# body }}{{{ . }}}{{/ body }}
+        </div>
+        {{# footnotes }}{{{ footnotes }}}{{/ footnotes }}
+        {{{ footer }}}
+      </div>
+      <footer>
+        <a href="https://github.com/matiaslina/perl6-matrix-client">
+          <img width=40 src="https://cdn1.iconfinder.com/data/icons/smallicons-logotypes/32/github-512.png" />
+        </a>
+      </footer>
+      </div>
+    </body>
+</html>

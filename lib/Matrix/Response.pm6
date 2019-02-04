@@ -113,3 +113,12 @@ class Presence {
         :currently_active(:$!currently-active) = False
     ) { }
 }
+
+class Tag {
+    has @.tags;
+
+    method new(%json) {
+        my @tags = %json<tags>.keys;
+        self.bless(:@tags)
+    }
+}

@@ -117,6 +117,24 @@ method set-presence(Matrix::Client:D: Str $presence, Str :$status-message = "") 
           :$presence, :status_msg($status-message));
 }
 
+#| PUT - /_matrix/client/r0/user/{userId}/rooms/{roomId}/tags/{tag}
+multi method tags(Str $room-id, Str:D $tag, $order) {
+    my $id = $.whoami;
+    from-json($.put("/user/$id/rooms/$room-id/tags/$tag", :$order).content)
+}
+
+#| GET - /_matrix/client/r0/user/{userId}/rooms/{roomId}/tags
+multi method tags(Str $room-id) {
+    my $id = $.whoami;
+    Matrix::Response::Tag.new(from-json($.get("/user/$id/rooms/$room-id/tags").content))
+}
+
+#| DELETE - /_matrix/client/r0/user/{userId}/rooms/{roomId}/tags/{tag}
+method remove-tag(Str $room-id, Str:D $tag) {
+    my $id = $.whoami;
+    $.delete("/user/$id/rooms/$room-id/tags/$tag")
+}
+
 # Syncronization
 
 multi method sync(Hash :$sync-filter is copy, :$since = "") {

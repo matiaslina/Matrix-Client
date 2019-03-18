@@ -80,10 +80,10 @@ from matrix.org. This will give you an overview about what's implemented in the 
 
 ## Room membership
 
-- [ ] POST - /_matrix/client/r0/rooms/{roomId}/join
+- [x] POST - /_matrix/client/r0/rooms/{roomId}/join
 - [ ] POST - /_matrix/client/r0/join/{roomIdOrAlias}
 - [ ] POST - /_matrix/client/r0/rooms/{roomId}/kick
-- [ ] POST - /_matrix/client/r0/rooms/{roomId}/leave
+- [x] POST - /_matrix/client/r0/rooms/{roomId}/leave
 - [x] GET - /_matrix/client/r0/joined_rooms
 - [ ] POST - /_matrix/client/r0/rooms/{roomId}/invite 
 - [ ] POST - /_matrix/client/r0/rooms/{roomId}/unban

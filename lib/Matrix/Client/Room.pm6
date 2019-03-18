@@ -12,11 +12,26 @@ submethod TWEAK {
     $!url-prefix = "/rooms/$!id";
 }
 
+method !format-name-from-members {
+    my @members = $.joined-members.kv.map(
+        -> $k, %v {
+            %v<display_name> // $k
+        }
+    );
+
+    $!name = do given @members.elems {
+        when 1 { @members.first }
+        when 2 { @members[0] ~ " and " ~ @members[1] }
+        when * > 2 { @members.first ~ " and {@members.elems - 1} others" }
+        default { "Empty room" }
+    };
+}
+
 method !get-name() {
     CATCH {
         when X::Matrix::Response {
             .code ~~ /M_NOT_FOUND/
-            ?? ($!name = '')
+            ?? self!format-name-from-members
             !! fail
         }
         default { fail }
@@ -25,8 +40,18 @@ method !get-name() {
     $!name = $data<name>;
 }
 
+method joined-members {
+    my %data = from-json($.get("/joined_members").content);
+    %data<joined>
+}
+
 method name() {
-    unless $!name.so { self!get-name() }
+    if $!name {
+        return $!name;
+    }
+
+    self!get-name;
+
     $!name
 }
 
@@ -66,7 +91,6 @@ method send-state(Str:D $event-type, :$state-key = "", *%args --> Str) {
     );
     from-json($res.content)<event_id>
 }
-
 
 method leave() {
     $.post('/leave')

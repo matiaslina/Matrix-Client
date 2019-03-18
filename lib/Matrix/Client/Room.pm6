@@ -12,26 +12,11 @@ submethod TWEAK {
     $!url-prefix = "/rooms/$!id";
 }
 
-method !format-name-from-members {
-    my @members = $.joined-members.kv.map(
-        -> $k, %v {
-            %v<display_name> // $k
-        }
-    );
-
-    $!name = do given @members.elems {
-        when 1 { @members.first }
-        when 2 { @members[0] ~ " and " ~ @members[1] }
-        when * > 2 { @members.first ~ " and {@members.elems - 1} others" }
-        default { "Empty room" }
-    };
-}
-
 method !get-name() {
     CATCH {
         when X::Matrix::Response {
             .code ~~ /M_NOT_FOUND/
-            ?? self!format-name-from-members
+            ?? ($!name = '')
             !! fail
         }
         default { fail }
@@ -45,14 +30,25 @@ method joined-members {
     %data<joined>
 }
 
-method name() {
-    if $!name {
-        return $!name;
-    }
-
+method name {
     self!get-name;
 
     $!name
+}
+
+method fallback-name(--> Str) {
+    my @members = $.joined-members.kv.map(
+        -> $k, %v {
+            %v<display_name> // $k
+        }
+    );
+
+    $!name = do given @members.elems {
+        when 1 { @members.first }
+        when 2 { @members[0] ~ " and " ~ @members[1] }
+        when * > 2 { @members.first ~ " and {@members.elems - 1} others" }
+        default { "Empty room" }
+    };
 }
 
 method messages() {

@@ -152,9 +152,9 @@ from matrix.org. This will give you an overview about what's implemented in the 
 - [ ] GET - /_matrix/client/r0/account/3pid
 - [ ] POST - /_matrix/client/r0/account/3pid
 - [ ] PUT - /_matrix/client/r0/user/{userId}/account_data/{type}
-- [ ] PUT - /_matrix/client/r0/user/{userId}/rooms/{roomId}/tags/{tag}
-- [ ] DELETE - /_matrix/client/r0/user/{userId}/rooms/{roomId}/tags/{tag}
-- [ ] GET - /_matrix/client/r0/user/{userId}/rooms/{roomId}/tags
+- [X] PUT - /_matrix/client/r0/user/{userId}/rooms/{roomId}/tags/{tag}
+- [X] DELETE - /_matrix/client/r0/user/{userId}/rooms/{roomId}/tags/{tag}
+- [X] GET - /_matrix/client/r0/user/{userId}/rooms/{roomId}/tags
 - [ ] POST - /_matrix/client/r0/account/deactivate
 - [ ] POST - /_matrix/client/r0/account/3pid/delete
 

@@ -1,0 +1,122 @@
+=begin pod
+
+=TITLE Matrix Responses
+
+=SUBTITLE Wrappers for HTTP responses
+
+=head1 Event
+
+
+       class Matrix::Response::Event { }
+
+Common contents of a response.
+
+=head2 Mapped keys
+
+=item content
+=item type
+
+=head1 RoomEvent
+
+
+       class Matrix::Response::RoomEvent is Matrix::Response::Event { }
+
+A single event for a room
+
+=head2 Mapped keys
+
+=item sender
+=item origin_server_ts
+=item event_id
+=item room_id
+
+=head2 Methods
+
+=head3 id
+
+    method id
+
+Returns the event_id
+
+=head3 timestamp
+
+    method timestamp
+
+Returns the origin_server_ts
+
+=head3 room-id
+
+    method room-id
+
+returns the room_id
+
+
+=head1 StateEvent
+
+
+       class Matrix::Response::StateEvent is Matrix::Response::RoomEvent { }
+
+=head2 Mapped keys
+
+=item C<prev_content>
+=item C<state_key>
+
+=head1 Timeline
+
+
+       class Matrix::Response::Timeline { }
+
+=head2 Mapped keys
+
+=item events — Return a list of L<Matrix::Response::Event|#Event>
+=item limited
+=item prev-batch
+
+
+=head1 RoomInfo
+
+
+       class Matrix::Response::RoomInfo { }
+
+=head2 Mapped keys
+
+=item room-id — Str with the room id
+=item state — List of L<Matrix::Response::Event|#Event>
+=item Timeine — A L<Matrix::Response::Timeline|#Timeline>
+
+=head1 InviteInfo
+
+
+       class Matrix::Response::InviteInfo { }
+
+=head2 Mapped keys
+
+=item room-id — Str with the room id
+=item events — List of L<Matrix::Response::Event|#Event>
+
+=head1 Sync
+
+
+       class Matrix::Response::Sync { }
+
+=head2 Mapped keys
+
+=item next-batch — Str with the hash for the next sync batch
+=item presence — List of L<Matrix::Response::Event|#Event>
+=item joined-rooms — List of L<Matrix::Response::RoomInfo|#RoomInfo>
+=item invited-rooms — List of L<Matrix::Response::InviteInfo|#InviteInfo>
+
+
+=head1 Presence
+
+
+       class Matrix::Response::Presence { }
+
+=head2 Mapped keys
+
+=item presence
+=item last-active-ago
+=item status-message
+=item currently-active
+
+=end pod

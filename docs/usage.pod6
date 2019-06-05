@@ -1,0 +1,41 @@
+=begin pod
+=head1 Before we begin…
+
+This guide will be a port from L<this guide|https://matrix.org/docs/guides/usage-of-the-matrix-js-sdk>
+by the Matrix team.
+
+=head1 Making a Matrix Client
+
+Let's explore how we would make a very simple Matrix client, with the only ability to perform an initial
+sync, and get the member list and the timeline for rooms of our choice.
+
+This guide will cover:
+
+=item Login
+=item Simple syncing
+=item Listening for timeline events
+=item Sending messages to rooms
+=item How to respond to specific messages
+
+=head2 Preparing the project
+
+Before we start, make sure you have perl6 and zef installed. My sugestion is to install
+L<rakudobrew|https://github.com/tadzik/rakudobrew> and follow the instructions.
+
+Once you're ready, the first thing is to install
+L<Matrix::Client|https://github.com/matiaslina/perl6-matrix-client> with C<zef>
+
+=begin code
+zef install Matrix::Client
+=end code
+
+And now we can include it on our source exaclty as expected.
+
+=begin code
+use Matrix::Client;
+=end code
+
+=head2 Login with an access token
+
+
+=end pod

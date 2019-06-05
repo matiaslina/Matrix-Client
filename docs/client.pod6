@@ -2,25 +2,55 @@
 
 =TITLE class Matrix::Client
 
-=SUBTITLE Client API for Matrix
+=SUBTITLE matrix.org client
 
-    class Matrix::Client does Matrix::Client::Requester {}
+=head1 NAME
+
+Matrix::Client — Client API for Matrix.org
+
+=head1 SYNOPSIS
+
+    use Matrix::Client;
+
+    my Matrix::Client $client .= new(
+       :home-server<https://matrix.org>,
+       :access-token<access-token>
+    );
+
+    my $room = $client.joined-rooms.first;
+    $room.send("Hello from Matrix::Client");
+
+
+    my $sync = $client.sync;
+
+    for $response.joined-rooms -> $room {
+        say "Messages from {$room.name}"
+        for $room.timeline
+                 .events
+                 .grep(*.type eq 'm.room.message') -> $msg {
+            say $msg.content<body>;
+        }
+    }
+
+=head1 DESCRIPTION
+
+    Class Matrix::Client does Matrix::Client::Requester {}
 
 The main object in the module. The C<Matrix::Client> is used to talk to a
 Matrix home server abstracting the HTTP requests.
 
 The client is used for example to join rooms, receive/send messages, etc.
 
-On server errors, all methods will throw a L<X::Matrix::Response> exception.
+On server errors, all methods will throw a L<X::Matrix::Response|x-matrix-response.html> exception.
 
-=head1 Methods
+=head1 METHODS
 
 =head2 new
 
     sub new(Str :$home-server, Str :$access-token?, Str :$device-id?)
 
 Creates a C<Matrix::Client> pointing to a home server. If no C<$access-token> is
-passed to the constructor, the client needs to call L<login> to make authorized
+passed to the constructor, the client needs to call L<#login> to make authorized
 calls to the API.
 
 =head2 login
@@ -33,7 +63,7 @@ before the C<login> call, it will register that C<device-id> in the server
 invalidating any previously associated access token to this C<device-id>.
 Otherwise the home server will auto-generate one.
 
-On a failed login attempt, a L<X::Matrix::Response> is raised with a code
+On a failed login attempt, a L<X::Matrix::Response|x-matrix-response.html> is raised with a code
 of C<“M_FORBIDDEN”>
 
 =head2 logout
@@ -51,7 +81,7 @@ Register a B<user> account in the home server.
 If C<$bind-email> is true, the server binds the email used for authentication
 to the Matrix ID with the ID Server.
 
-In case there's an error with the registration, a L<X::Matrix::Response> is raised
+In case there's an error with the registration, a L<X::Matrix::Response|x-matrix-response.html> is raised
 with one of the following C<code>s:
 
 =item C<M_USER_IN_USE> The desired user ID is already taken.
@@ -63,7 +93,7 @@ with one of the following C<code>s:
     method profile(Str :$user-id?)
 
 Get the combined profile information for this user. With no C<$user-id>
-L<profile> will provide the profile data associated with the client
+L<#profile> will provide the profile data associated with the client
 account.
 
 It returns a C<Hash> that can contains C<avatar_url> and/or C<displayname>.
@@ -125,10 +155,10 @@ must be C<“online”>, C<“offline”> or C<“unavailable”>.
     multi method sync(Hash :$sync-filter is copy, :$since = "")
 
 Gets the client's state with the latest state on the server. It returns
-a L<Matrix::Response::Sync> with the initial snapshot or delta.
+a L<Matrix::Response::Sync|responses.html#Sync> with the initial snapshot or delta.
 
 C<$since> is necessary to get the incremental deltas to the states. The C<$since>
-value is retrieved from the C<next-batch> in the L<Matrix::Response::Sync>.
+value is retrieved from the C<next-batch> in the L<Matrix::Response::Sync|responses.html#sync>.
 
 The C<sync-filter> is the filter that will be applied to the sync. It will encode
 it to a JSON string if it isn't a C<Str> already. For more information about
@@ -217,11 +247,11 @@ L<Room events|https://matrix.org/docs/spec/client_server/r0.3.0.html#room-events
     method get-room-id($room-alias)
 
 Get the room id for an C<$room-alias>. The room alias must be in the form
-C<localname:domain>, otherwise it will raise a L<X::Matrix::Response> with
+C<localname:domain>, otherwise it will raise a L<X::Matrix::Response|x-matrix-response.html> with
 the proper message and C<M_UNKNOWN> error code.
 
 If there's no room with the C<$room-alias> in the server directory, it will
-raise a L<L::Matrix::Response> with a C<M_NOT_FOUND> code.
+raise a L<X::Matrix::Response|x-matrix-response.html> with a C<M_NOT_FOUND> code.
 
 =head2 add-room-alias
 
@@ -248,8 +278,8 @@ Uploads a file to the server. It returns the MXC URI to the uploaded content.
 
 Returns a C<Supply> that emits L<Matrix::Response::StateEvent> with the last
 events. The C<$sleep> parameter is to sleep for that amount of seconds before
-making a L<sync> request again. The C<$sync-filter> is the same parameter that
-will be passed to L<sync> method to filter out the useful events.
+making a L<#sync> request again. The C<$sync-filter> is the same parameter that
+will be passed to L<#sync> method to filter out the useful events.
 
 This can be useful to turn something like:
 

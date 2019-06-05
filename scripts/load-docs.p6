@@ -39,7 +39,6 @@ sub MAIN(:$spec?) {
         {
             quietly try { .WHY.Str } or ""
         }).grep(/_matrix/).SetHash;
-    .say for $implemented-methods;
     say q:to/EOF/;
     # List of implemented endpoints
 

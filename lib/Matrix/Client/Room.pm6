@@ -25,11 +25,34 @@ method !get-name() {
     $!name = $data<name>;
 }
 
-method name() {
-    unless $!name.so { self!get-name() }
+#| GET - /_matrix/client/r0/rooms/{roomId}/joined_members
+method joined-members {
+    my %data = from-json($.get("/joined_members").content);
+    %data<joined>
+}
+
+method name {
+    self!get-name;
+
     $!name
 }
 
+method fallback-name(--> Str) {
+    my @members = $.joined-members.kv.map(
+        -> $k, %v {
+            %v<display_name> // $k
+        }
+    );
+
+    $!name = do given @members.elems {
+        when 1 { @members.first }
+        when 2 { @members[0] ~ " and " ~ @members[1] }
+        when * > 2 { @members.first ~ " and {@members.elems - 1} others" }
+        default { "Empty room" }
+    };
+}
+
+#| GET - /_matrix/client/r0/rooms/{roomId}/messages
 method messages() {
     my $res = $.get("/messages");
     my $data = from-json($res.content);
@@ -37,6 +60,7 @@ method messages() {
     return $data<chunk>.clone;
 }
 
+#| PUT - /_matrix/client/r0/rooms/{roomId}/send/{eventType}/{txnId}
 method send(Str $body!, Str :$type? = "m.text") {
     $Matrix::Client::Common::TXN-ID++;
     my $res = $.put(
@@ -47,6 +71,7 @@ method send(Str $body!, Str :$type? = "m.text") {
     from-json($res.content)<event_id>
 }
 
+#| GET - /_matrix/client/r0/rooms/{roomId}/state
 multi method state(--> Seq) {
     my $data = from-json($.get('/state').content);
 
@@ -55,10 +80,12 @@ multi method state(--> Seq) {
     }
 }
 
+#| GET - /_matrix/client/r0/rooms/{roomId}/state/{eventType}
 multi method state(Str $event-type) {
     from-json($.get("/state/$event-type").content)
 }
 
+#| PUT - /_matrix/client/r0/rooms/{roomId}/state/{eventType}/{stateKey}
 method send-state(Str:D $event-type, :$state-key = "", *%args --> Str) {
     my $res = $.put(
         "/state/$event-type/$state-key",
@@ -67,7 +94,7 @@ method send-state(Str:D $event-type, :$state-key = "", *%args --> Str) {
     from-json($res.content)<event_id>
 }
 
-
+#| POST - /_matrix/client/r0/rooms/{roomId}/leave
 method leave() {
     $.post('/leave')
 }

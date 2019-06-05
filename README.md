@@ -1,33 +1,26 @@
-### multi method tags
+# Matrix client
 
-```perl6
-multi method tags(
-    Str $room-id,
-    Str:D $tag,
-    $order
-) returns Mu
-```
+A perl 6 library for [Matrix](https://matrix.org).
 
-PUT - /_matrix/client/r0/user/{userId}/rooms/{roomId}/tags/{tag}
+## Status
 
-### multi method tags
+This project is in early development. A lot of methods return a raw
+`HTTP::Response` and not something from this library.
 
-```perl6
-multi method tags(
-    Str $room-id
-) returns Mu
-```
+## Examples
 
-GET - /_matrix/client/r0/user/{userId}/rooms/{roomId}/tags
+From the `examples` directory:
 
-### method remove-tag
+    use v6;
+    use Matrix::Client;
 
-```perl6
-method remove-tag(
-    Str $room-id,
-    Str:D $tag
-) returns Mu
-```
+    # Instantiate a new client for a given home-server
+    my $client = Matrix::Client.new: :home-server<https://matrix.org>
+    # Login
+    $client.login: @*ARGS[0], @*ARGS[1];
 
-DELETE - /_matrix/client/r0/user/{userId}/rooms/{roomId}/tags/{tag}
+    # Show all joined rooms
+    say $client.rooms(:sync);
 
+    # And finally logout.
+    $client.logout

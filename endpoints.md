@@ -84,7 +84,7 @@ from matrix.org. This will give you an overview about what's implemented in the 
 - [X] POST - /_matrix/client/r0/join/{roomIdOrAlias}
 - [X] POST - /_matrix/client/r0/rooms/{roomId}/ban
 - [ ] POST - /_matrix/client/r0/rooms/{roomId}/forget
-- [ ] POST - /_matrix/client/r0/rooms/{roomId}/invite
+- [X] POST - /_matrix/client/r0/rooms/{roomId}/invite
 - [ ] POST - /_matrix/client/r0/rooms/{roomId}/invite
 - [ ] POST - /_matrix/client/r0/rooms/{roomId}/join
 - [ ] POST - /_matrix/client/r0/rooms/{roomId}/kick

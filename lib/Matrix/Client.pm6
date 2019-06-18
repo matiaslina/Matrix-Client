@@ -219,6 +219,14 @@ method unban(Str $room-id, Str $user-id) {
     );
 }
 
+#| POST - /_matrix/client/r0/rooms/{roomId}/invite
+method invite(Str $room-id, Str $user-id) {
+    $.post(
+        "/rooms/$room-id/invite",
+        :$user-id
+    )
+}
+
 #| POST - /_matrix/client/r0/rooms/{roomId}/leave
 method leave-room($room-id) {
     $.post("/rooms/$room-id/leave");

@@ -227,6 +227,20 @@ method invite(Str $room-id, Str $user-id) {
     )
 }
 
+#| POST - /_matrix/client/r0/rooms/{roomId}/forget
+method forget(Str $room-id) {
+    $.post("/rooms/$room-id/forget")
+}
+
+#| POST - /_matrix/client/r0/rooms/{roomId}/kick
+method kick(Str $room-id, Str $user-id, $reason = "") {
+    $.post(
+        "/rooms/$room-id/kick",
+        :$user-id,
+        :$reason
+    );
+}
+
 #| POST - /_matrix/client/r0/rooms/{roomId}/leave
 method leave-room($room-id) {
     $.post("/rooms/$room-id/leave");

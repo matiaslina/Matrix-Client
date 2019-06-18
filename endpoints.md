@@ -82,14 +82,14 @@ from matrix.org. This will give you an overview about what's implemented in the 
 
 - [X] GET - /_matrix/client/r0/joined_rooms
 - [X] POST - /_matrix/client/r0/join/{roomIdOrAlias}
-- [ ] POST - /_matrix/client/r0/rooms/{roomId}/ban
+- [X] POST - /_matrix/client/r0/rooms/{roomId}/ban
 - [ ] POST - /_matrix/client/r0/rooms/{roomId}/forget
 - [ ] POST - /_matrix/client/r0/rooms/{roomId}/invite
 - [ ] POST - /_matrix/client/r0/rooms/{roomId}/invite
 - [ ] POST - /_matrix/client/r0/rooms/{roomId}/join
 - [ ] POST - /_matrix/client/r0/rooms/{roomId}/kick
 - [X] POST - /_matrix/client/r0/rooms/{roomId}/leave
-- [ ] POST - /_matrix/client/r0/rooms/{roomId}/unban
+- [X] POST - /_matrix/client/r0/rooms/{roomId}/unban
 
 ## Room participation
 

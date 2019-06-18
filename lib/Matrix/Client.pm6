@@ -202,6 +202,23 @@ method join-room($room-id!) {
     $.post("/join/$room-id")
 }
 
+#| POST - /_matrix/client/r0/rooms/{roomId}/ban
+method ban(Str $room-id, Str $user-id, $reason = "") {
+    $.post(
+        "/rooms/$room-id/ban",
+        :$user-id,
+        :$reason
+    );
+}
+
+#| POST - /_matrix/client/r0/rooms/{roomId}/unban
+method unban(Str $room-id, Str $user-id) {
+    $.post(
+        "/rooms/$room-id/unban",
+        :$user-id
+    );
+}
+
 #| POST - /_matrix/client/r0/rooms/{roomId}/leave
 method leave-room($room-id) {
     $.post("/rooms/$room-id/leave");

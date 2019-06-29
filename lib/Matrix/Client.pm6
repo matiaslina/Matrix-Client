@@ -116,6 +116,31 @@ method whoami {
     $!user-id
 }
 
+## Device management
+
+#| GET - /_matrix/client/r0/devices
+method devices(Matrix::Client:D: --> Seq) {
+    my $data = from-json($.get("/devices").content);
+    $data<devices>.map(-> $device-data {
+                              Matrix::Response::Device.new(|$device-data)
+                          })
+}
+
+#| GET - /_matrix/client/r0/devices/{deviceId}
+method device(Matrix::Client:D: Str $device-id where *.chars > 0 --> Matrix::Response::Device) {
+    my $device-data = from-json($.get("/devices/$device-id").content);
+    Matrix::Response::Device.new(|$device-data)
+}
+
+#| PUT - /_matrix/client/r0/devices/{deviceId}
+method update-device(Matrix::Client:D:
+                     Str $device-id where *.chars > 0,
+                     Str $display-name) {
+    $.put("/devices/$device-id", :display_name($display-name));
+}
+
+## Presence
+
 #| GET - /_matrix/client/r0/presence/{userId}/status
 method presence(Matrix::Client:D: $user-id? --> Matrix::Response::Presence) {
     my $id = $user-id // $.whoami;

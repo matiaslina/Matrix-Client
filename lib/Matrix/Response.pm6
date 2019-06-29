@@ -122,3 +122,18 @@ class Tag {
         self.bless(:@tags)
     }
 }
+
+
+class Matrix::Response::Device {
+    has Str $.device-id;
+    has $.display-name;
+    has $.last-seen-ip;
+    has $.last-seen-ts;
+
+    submethod BUILD(
+        Str :device_id(:$!device-id),
+        :display_name(:$!display-name)?,
+        :last_seen_ip(:$!last-seen-ip)?,
+        :last_seen_ts(:$!last-seen-ts)?
+    ) { }
+}

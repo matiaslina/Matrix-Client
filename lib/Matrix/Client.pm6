@@ -275,6 +275,17 @@ method send(Str $room-id, Str $body, :$type? = "m.text") {
     from-json($res.content)<event_id>
 }
 
+#| PUT - /_matrix/client/r0/rooms/{roomId}/send/{eventType}/{txnId}
+method send-event(Str $room-id, Str :$event-type, :$content, :$txn-id? is copy, :$timestamp?) {
+    unless $txn-id.defined {
+        $txn-id = $Matrix::Client::Common::TXN-ID++;
+    }
+
+    my $path = "/rooms/$room-id/send/$event-type/$txn-id";
+    my $res = $.put($path, |$content);
+    from-json($res.content)<event_id>
+}
+
 #| GET - /_matrix/client/r0/directory/room/{roomAlias}
 method get-room-id($room-alias) {
     my $res = $.get("/directory/room/$room-alias");
@@ -309,10 +320,10 @@ method upload(IO::Path $path, Str $filename?) {
 
 # Misc
 
-method run(Int :$sleep = 10, :$sync-filter? --> Supply) {
+method run(Int :$sleep = 10, :$sync-filter?, :$start-since? --> Supply) {
     my $s = Supplier.new;
     my $supply = $s.Supply;
-    my $since = "";
+    my $since = $start-since // "";
 
     start {
         loop {

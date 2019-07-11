@@ -1,7 +1,7 @@
 use HTTP::UserAgent;
 use HTTP::Request::Common;
 use URI::Encode;
-use JSON::Tiny;
+use JSON::Fast;
 use Matrix::Client::Exception;
 
 unit role Matrix::Client::Requester;

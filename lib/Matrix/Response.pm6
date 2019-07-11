@@ -1,4 +1,4 @@
-use JSON::Tiny;
+use JSON::Fast;
 
 unit module Matrix::Response;
 
@@ -69,7 +69,7 @@ class Matrix::Response::Sync {
         my Matrix::Response::Event @presence;
         my Matrix::Response::RoomInfo @joined-rooms;
         my Matrix::Response::InviteInfo @invited-rooms;
-        
+
         for $json<presence><events>.List -> $ev {
             @presence.push(Matrix::Response::Event.new(|$ev));
         }

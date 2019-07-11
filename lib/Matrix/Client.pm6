@@ -1,6 +1,6 @@
 use HTTP::Request::Common;
 use URI::Encode;
-use JSON::Tiny;
+use JSON::Fast;
 use Matrix::Response;
 use Matrix::Client::Common;
 use Matrix::Client::Room;

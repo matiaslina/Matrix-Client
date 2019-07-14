@@ -345,6 +345,12 @@ method upload(IO::Path $path, Str $filename?) {
 
 # Misc
 
+#| Set the access token. This allows one to use the API without having to log
+#| in using username/password combo.
+method use-access-token(Str $token) {
+    $!access-token = $token;
+}
+
 method run(Int :$sleep = 10, :$sync-filter?, :$start-since? --> Supply) {
     my $s = Supplier.new;
     my $supply = $s.Supply;

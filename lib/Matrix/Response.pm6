@@ -1,4 +1,4 @@
-use JSON::Tiny;
+use JSON::Fast;
 
 unit module Matrix::Response;
 
@@ -69,7 +69,7 @@ class Matrix::Response::Sync {
         my Matrix::Response::Event @presence;
         my Matrix::Response::RoomInfo @joined-rooms;
         my Matrix::Response::InviteInfo @invited-rooms;
-        
+
         for $json<presence><events>.List -> $ev {
             @presence.push(Matrix::Response::Event.new(|$ev));
         }
@@ -121,4 +121,19 @@ class Tag {
         my @tags = %json<tags>.keys;
         self.bless(:@tags)
     }
+}
+
+
+class Matrix::Response::Device {
+    has Str $.device-id;
+    has $.display-name;
+    has $.last-seen-ip;
+    has $.last-seen-ts;
+
+    submethod BUILD(
+        Str :device_id(:$!device-id),
+        :display_name(:$!display-name)?,
+        :last_seen_ip(:$!last-seen-ip)?,
+        :last_seen_ts(:$!last-seen-ts)?
+    ) { }
 }

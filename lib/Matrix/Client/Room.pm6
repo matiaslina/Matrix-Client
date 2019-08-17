@@ -1,4 +1,4 @@
-use JSON::Tiny;
+use JSON::Fast;
 use Matrix::Client::Common;
 use Matrix::Client::Requester;
 use Matrix::Response;

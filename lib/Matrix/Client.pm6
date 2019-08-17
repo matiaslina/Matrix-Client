@@ -1,6 +1,6 @@
 use HTTP::Request::Common;
 use URI::Encode;
-use JSON::Tiny;
+use JSON::Fast;
 use Matrix::Response;
 use Matrix::Client::Common;
 use Matrix::Client::Room;
@@ -116,6 +116,31 @@ method whoami {
     $!user-id
 }
 
+## Device management
+
+#| GET - /_matrix/client/r0/devices
+method devices(Matrix::Client:D: --> Seq) {
+    my $data = from-json($.get("/devices").content);
+    $data<devices>.map(-> $device-data {
+                              Matrix::Response::Device.new(|$device-data)
+                          })
+}
+
+#| GET - /_matrix/client/r0/devices/{deviceId}
+method device(Matrix::Client:D: Str $device-id where *.chars > 0 --> Matrix::Response::Device) {
+    my $device-data = from-json($.get("/devices/$device-id").content);
+    Matrix::Response::Device.new(|$device-data)
+}
+
+#| PUT - /_matrix/client/r0/devices/{deviceId}
+method update-device(Matrix::Client:D:
+                     Str $device-id where *.chars > 0,
+                     Str $display-name) {
+    $.put("/devices/$device-id", :display_name($display-name));
+}
+
+## Presence
+
 #| GET - /_matrix/client/r0/presence/{userId}/status
 method presence(Matrix::Client:D: $user-id? --> Matrix::Response::Presence) {
     my $id = $user-id // $.whoami;
@@ -202,6 +227,45 @@ method join-room($room-id!) {
     $.post("/join/$room-id")
 }
 
+#| POST - /_matrix/client/r0/rooms/{roomId}/ban
+method ban(Str $room-id, Str $user-id, $reason = "") {
+    $.post(
+        "/rooms/$room-id/ban",
+        :$user-id,
+        :$reason
+    );
+}
+
+#| POST - /_matrix/client/r0/rooms/{roomId}/unban
+method unban(Str $room-id, Str $user-id) {
+    $.post(
+        "/rooms/$room-id/unban",
+        :$user-id
+    );
+}
+
+#| POST - /_matrix/client/r0/rooms/{roomId}/invite
+method invite(Str $room-id, Str $user-id) {
+    $.post(
+        "/rooms/$room-id/invite",
+        :$user-id
+    )
+}
+
+#| POST - /_matrix/client/r0/rooms/{roomId}/forget
+method forget(Str $room-id) {
+    $.post("/rooms/$room-id/forget")
+}
+
+#| POST - /_matrix/client/r0/rooms/{roomId}/kick
+method kick(Str $room-id, Str $user-id, $reason = "") {
+    $.post(
+        "/rooms/$room-id/kick",
+        :$user-id,
+        :$reason
+    );
+}
+
 #| POST - /_matrix/client/r0/rooms/{roomId}/leave
 method leave-room($room-id) {
     $.post("/rooms/$room-id/leave");
@@ -233,6 +297,17 @@ method send(Str $room-id, Str $body, :$type? = "m.text") {
         msgtype => $type, body => $body
     );
 
+    from-json($res.content)<event_id>
+}
+
+#| PUT - /_matrix/client/r0/rooms/{roomId}/send/{eventType}/{txnId}
+method send-event(Str $room-id, Str :$event-type, :$content, :$txn-id? is copy, :$timestamp?) {
+    unless $txn-id.defined {
+        $txn-id = $Matrix::Client::Common::TXN-ID++;
+    }
+
+    my $path = "/rooms/$room-id/send/$event-type/$txn-id";
+    my $res = $.put($path, |$content);
     from-json($res.content)<event_id>
 }
 
@@ -270,10 +345,10 @@ method upload(IO::Path $path, Str $filename?) {
 
 # Misc
 
-method run(Int :$sleep = 10, :$sync-filter? --> Supply) {
+method run(Int :$sleep = 10, :$sync-filter?, :$start-since? --> Supply) {
     my $s = Supplier.new;
     my $supply = $s.Supply;
-    my $since = "";
+    my $since = $start-since // "";
 
     start {
         loop {

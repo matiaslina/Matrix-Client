@@ -1,7 +1,7 @@
 #!/usr/bin/env perl6
 use v6;
 use lib "lib";
-use JSON::Tiny;
+use JSON::Fast;
 use Matrix::Client;
 use Matrix::Client::Exception;
 
@@ -34,7 +34,7 @@ class Bot {
             my $sync = { room => timeline => limit => 1 };
             my $response = $!client.sync(sync-filter => $sync, since => $since);
             $since = $response.next-batch;
-            
+
             for $response.joined-rooms -> $room {
                 for $room.timeline
                          .events

@@ -1,6 +1,6 @@
 use lib 'lib';
 use Test;
-use JSON::Tiny;
+use JSON::Fast;
 use Matrix::Response;
 plan 7;
 

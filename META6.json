@@ -9,7 +9,7 @@
     "URI::Encode",
     "IO::Socket::SSL"
   ],
-  "description" : "Matrix client for Perl 6",
+  "description" : "Matrix client for Raku",
   "license" : "Artistic-2.0",
   "name" : "Matrix::Client",
   "perl" : "6.c",

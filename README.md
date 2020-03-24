@@ -1,6 +1,6 @@
 # Matrix::Client
 
-A perl 6 library for [Matrix](https://matrix.org).
+A [Raku](https://raku.org) library for [Matrix](https://matrix.org).
 
 ## Synopsis
 
@@ -20,7 +20,7 @@ A perl 6 library for [Matrix](https://matrix.org).
     # Send a message to a random room that I'm in
     my $room = $client.joined-rooms.pick;
     say "Sending a message to {$room.name}";
-    $room.send("Hello from perl6!");
+    $room.send("Hello from Raku!");
 
 ## Description
 

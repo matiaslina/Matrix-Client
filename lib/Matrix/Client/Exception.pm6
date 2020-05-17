@@ -7,4 +7,10 @@ package X::Matrix {
             "$!code: $!error"
         }
     }
+
+    class MXCParse is Exception {
+        has $.uri;
+
+        method message { "Cannot parse '$!uri'" }
+    }
 }

@@ -5,6 +5,7 @@ use Matrix::Response;
 use Matrix::Client::Common;
 use Matrix::Client::Room;
 use Matrix::Client::Requester;
+use Matrix::Client::MediaStore;
 
 unit class Matrix::Client does Matrix::Client::Requester;
 
@@ -331,16 +332,15 @@ method remove-room-alias($room-alias) {
 
 # Media
 
-#| POST - /_matrix/media/r0/upload
-method upload(IO::Path $path, Str $filename?) {
-    my $buf = slurp $path, :bin;
-    my $fn = $filename ?? $filename !! $path.basename;
-    my $res = $.post-bin("/upload", $buf,
-        content-type => "image/png",
-        filename => $fn,
-    );
-    my $data = from-json($res.content);
-    $data<content_uri> // "";
+method media(--> Matrix::Client::MediaStore) {
+    return Matrix::Client::MediaStore.new(
+        home-server => $!home-server,
+        access-token => $!access-token
+    )
+}
+
+method upload(IO::Path $path, Str $filename?) is DEPRECATED('media.upload') {
+    self.media.upload($path, $filename)
 }
 
 # Misc

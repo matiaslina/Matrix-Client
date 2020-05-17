@@ -34,8 +34,9 @@ sub get-api-docs {
 
 sub MAIN(:$spec?) {
     my %tags = get-api-docs;
-    my $implemented-methods = (Matrix::Client, Matrix::Client::Room).map(*.^methods)
-    .flat.map(
+    my $implemented-methods = (
+        Matrix::Client, Matrix::Client::Room, Matrix::Client::MediaStore
+    ).map(*.^methods».candidates).flat.map(
         {
             quietly try { .WHY.Str } or ""
         }).grep(/_matrix/).SetHash;

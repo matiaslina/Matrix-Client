@@ -46,14 +46,14 @@ method upload(IO::Path $path, Str $filename?, Str :$content-type is copy = "imag
     $data<content_uri> // "";
 }
 
-# GET - /_matrix/media/r0/download/{serverName}/{mediaId}
+#| GET - /_matrix/media/r0/download/{serverName}/{mediaId}
 multi method download(Str $mxc-uri, :$allow-remote = True) {
     my $mxc = self.parse-mxc($mxc-uri);
 
     samewith($mxc<server-name>, $mxc<media-id>, :$allow-remote)
 }
 
-# GET - /_matrix/media/r0/download/{serverName}/{mediaId}
+#| GET - /_matrix/media/r0/download/{serverName}/{mediaId}
 multi method download(Str $server-name, Str $media-id, Bool :$allow-remote = True) {
     my $response = $.get(
         "/download/{$server-name}/{$media-id}",

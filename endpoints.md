@@ -31,9 +31,9 @@ from matrix.org. This will give you an overview about what's implemented in the 
 
 - [X] GET - /_matrix/media/r0/config
 - [X] GET - /_matrix/media/r0/download/{serverName}/{mediaId}
-- [ ] GET - /_matrix/media/r0/download/{serverName}/{mediaId}/{fileName}
+- [X] GET - /_matrix/media/r0/download/{serverName}/{mediaId}/{fileName}
 - [ ] GET - /_matrix/media/r0/preview_url
-- [ ] GET - /_matrix/media/r0/thumbnail/{serverName}/{mediaId}
+- [X] GET - /_matrix/media/r0/thumbnail/{serverName}/{mediaId}
 - [X] POST - /_matrix/media/r0/upload
 
 ## OpenID
@@ -176,5 +176,5 @@ from matrix.org. This will give you an overview about what's implemented in the 
 
 # Endpoint completion
 
-0.378641% - (39/103)
+0.398058% - (41/103)
 

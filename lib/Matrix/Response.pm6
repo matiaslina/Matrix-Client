@@ -123,7 +123,6 @@ class Tag {
     }
 }
 
-
 class Matrix::Response::Device {
     has Str $.device-id;
     has $.display-name;
@@ -136,4 +135,12 @@ class Matrix::Response::Device {
         :last_seen_ip(:$!last-seen-ip)?,
         :last_seen_ts(:$!last-seen-ts)?
     ) { }
+}
+
+class Matrix::Response::MediaStore::Config {
+    has Int $.upload-size;
+
+    method new(%config) {
+        self.bless(:upload-size(%config<m.upload.size> // Int));
+    }
 }

@@ -1,7 +1,9 @@
 use JSON::Fast;
+use URI::Escape;
+
 use Matrix::Client::Requester;
 use Matrix::Client::Exception;
-use URI::Escape;
+use Matrix::Response;
 
 unit class Matrix::Client::MediaStore does Matrix::Client::Requester;
 
@@ -16,7 +18,6 @@ submethod TWEAK {
     $!client-endpoint = "/_matrix/media/r0";
 }
 
-# https://matrix.deprecated.org/_matrix/media/r0/thumbnail/matrix.org/TKTUVTAazFocrTjezhiXZiIe?width=25&height=25&method=crop
 method parse-mxc(Str $uri) {
     if $uri ~~ m/"mxc://" $<server-name> = [.*] "/" $<media-id> = [ .* ]/ {
         return {
@@ -67,4 +68,9 @@ multi method download(Str $server-name, Str $media-id, Bool :$allow-remote = Tru
         content-disposition => %headers<Content-Disposition>.head,
         content => $response.content
     )
+}
+
+method config(--> Matrix::Response::MediaStore::Config) {
+    my $response = $.get("/config");
+    Matrix::Response::MediaStore::Config.new(from-json($response.content))
 }

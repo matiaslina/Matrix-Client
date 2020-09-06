@@ -2,24 +2,38 @@ use lib 'lib';
 use Test;
 use JSON::Fast;
 use Matrix::Response;
-plan 7;
+plan 2;
 
-my $test-file = 'sync.json';
+subtest 'Sync', {
+    plan 7;
+    my $test-file = 'sync.json';
+    my $data;
 
-unless $test-file.IO.f {
-    skip-rest 'Missing sync.json to test';
-    exit;
-}
+    if $test-file.IO.f {
+        $data = from-json($test-file.IO.slurp);
+        lives-ok { Matrix::Response::Sync.new($test-file.IO.slurp) }, 'Sync.new accepts Str';
+        lives-ok { Matrix::Response::Sync.new($data) }, 'Sync.new accepts Associative';
 
-my $data = from-json($test-file.IO.slurp);
+        my $res = Matrix::Response::Sync.new($data);
+        can-ok $res, 'joined-rooms', 'can .joined-rooms';
+        can-ok $res, 'presence', 'can .presence';
 
-ok $data;
-lives-ok { Matrix::Response::Sync.new($test-file.IO.slurp) };
-lives-ok { Matrix::Response::Sync.new($data) };
+        isa-ok $res.joined-rooms, List, '.joined-rooms returns a List';
+        isa-ok $res.presence, List, '.presence returns a List';
 
-my $res = Matrix::Response::Sync.new($data);
-can-ok $res, 'joined-rooms';
-can-ok $res, 'presence';
+    } else {
+        skip 'Missing sync.json to test', 7;
+    }
 
-isa-ok $res.joined-rooms, List;
-isa-ok $res.presence, List;
+};
+
+subtest 'MediaStore', {
+    plan 4;
+    my %config = 'm.upload.size' => 5000;
+    my $config-response = Matrix::Response::MediaStore::Config.new(|%config);
+
+    isa-ok $config-response, Matrix::Response::MediaStore::Config;
+    can-ok $config-response, 'upload-size';
+    isa-ok $config-response.upload-size, Int;
+    is $config-response.upload-size, %config<m.upload.size>, 'correct upload size';
+};

@@ -29,7 +29,7 @@ from matrix.org. This will give you an overview about what's implemented in the 
 
 ## Media
 
-- [ ] GET - /_matrix/media/r0/config
+- [X] GET - /_matrix/media/r0/config
 - [X] GET - /_matrix/media/r0/download/{serverName}/{mediaId}
 - [ ] GET - /_matrix/media/r0/download/{serverName}/{mediaId}/{fileName}
 - [ ] GET - /_matrix/media/r0/preview_url
@@ -52,6 +52,8 @@ from matrix.org. This will give you an overview about what's implemented in the 
 - [ ] GET - /_matrix/client/r0/pushers
 - [ ] GET - /_matrix/client/r0/pushrules/
 - [ ] GET - /_matrix/client/r0/pushrules/{scope}/{kind}/{ruleId}
+- [ ] GET - /_matrix/client/r0/pushrules/{scope}/{kind}/{ruleId}/actions
+- [ ] GET - /_matrix/client/r0/pushrules/{scope}/{kind}/{ruleId}/enabled
 - [ ] POST - /_matrix/client/r0/pushers/set
 - [ ] PUT - /_matrix/client/r0/pushrules/{scope}/{kind}/{ruleId}
 - [ ] PUT - /_matrix/client/r0/pushrules/{scope}/{kind}/{ruleId}/actions
@@ -73,6 +75,7 @@ from matrix.org. This will give you an overview about what's implemented in the 
 
 - [X] DELETE - /_matrix/client/r0/directory/room/{roomAlias}
 - [X] GET - /_matrix/client/r0/directory/room/{roomAlias}
+- [ ] GET - /_matrix/client/r0/rooms/{roomId}/aliases
 - [X] PUT - /_matrix/client/r0/directory/room/{roomAlias}
 
 ## Room discovery
@@ -115,7 +118,7 @@ from matrix.org. This will give you an overview about what's implemented in the 
 - [X] PUT - /_matrix/client/r0/rooms/{roomId}/state/{eventType}/{stateKey}
 - [ ] PUT - /_matrix/client/r0/rooms/{roomId}/typing/{userId}
 
-## Room ugprades
+## Room upgrades
 
 - [ ] POST - /_matrix/client/r0/rooms/{roomId}/upgrade
 
@@ -169,4 +172,9 @@ from matrix.org. This will give you an overview about what's implemented in the 
 ## VOIP
 
 - [ ] GET - /_matrix/client/r0/voip/turnServer
+
+
+# Endpoint completion
+
+0.378641% - (39/103)
 

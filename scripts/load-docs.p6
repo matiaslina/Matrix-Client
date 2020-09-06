@@ -34,6 +34,8 @@ sub get-api-docs {
 
 sub MAIN(:$spec?) {
     my %tags = get-api-docs;
+    my $total = 0;
+    my $completed = 0;
     my $implemented-methods = (
         Matrix::Client, Matrix::Client::Room, Matrix::Client::MediaStore
     ).map(*.^methods».candidates).flat.map(
@@ -58,6 +60,9 @@ sub MAIN(:$spec?) {
         for $methods.Seq.sort -> $m {
             my Str $method = $m.trim;
             my $checked = $implemented-methods{$m} ?? "X" !! " ";
+            $completed++ if $implemented-methods{$m};
+            $total++;
+
             if $spec {
                 $method = $m.subst(/unstable/, $spec)
             }
@@ -65,4 +70,11 @@ sub MAIN(:$spec?) {
         }
         say "";
     }
+
+    say qq:to/EOF/;
+
+    # Endpoint completion
+
+    {$completed/$total}% - ($completed/$total)
+    EOF
 }

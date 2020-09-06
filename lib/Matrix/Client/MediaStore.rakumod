@@ -70,6 +70,7 @@ multi method download(Str $server-name, Str $media-id, Bool :$allow-remote = Tru
     )
 }
 
+#| GET - /_matrix/media/r0/config
 method config(--> Matrix::Response::MediaStore::Config) {
     my $response = $.get("/config");
     Matrix::Response::MediaStore::Config.new(from-json($response.content))

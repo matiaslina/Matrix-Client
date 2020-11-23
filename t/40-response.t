@@ -30,7 +30,7 @@ subtest 'Sync', {
 subtest 'MediaStore', {
     plan 4;
     my %config = 'm.upload.size' => 5000;
-    my $config-response = Matrix::Response::MediaStore::Config.new(|%config);
+    my $config-response = Matrix::Response::MediaStore::Config.new(%config);
 
     isa-ok $config-response, Matrix::Response::MediaStore::Config;
     can-ok $config-response, 'upload-size';

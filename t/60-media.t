@@ -7,6 +7,8 @@ my $path = $*TMPDIR.add('matrix-client-test');
 LEAVE { unlink $path; }
 $path.spurt("") unless $path.f;
 
+plan 3;
+
 subtest 'Upload', {
     plan 5;
     # Mock the post-bin method of Matrix::Client::Requester.

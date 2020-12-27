@@ -50,8 +50,7 @@ repeated data.
     my $new-response = $client.sync(:$since);
 
 There's a C<filter> argument that you could use to filter the response. To
-see available parameters to the filter you can go
-L<here|https://matrix.org/docs/spec/client_server/r0.3.0.html#post-matrix-client-r0-user-userid-filter>.
+see available parameters to the filter you can go L<here|https://matrix.org/docs/spec/client_server/r0.3.0.html#post-matrix-client-r0-user-userid-filter>.
 
     # limit the messages per room to 1
 

@@ -34,22 +34,89 @@ without the need for a L<Matrix::Client>.
 Returns the name of the room. If no C<m.room.name> was emmited (i.e.: no name
 was set for this room), then an empty string is returned.
 
-=head2 send
+=head2 fallback-name
 
-    method send(Str $body!, Str :$type? = "m.text")
+    method fallback-name(--> Str)
 
-Sends a message to the room. It will return the C<event_id> for this message.
+Return a name for the room with the members of the room. Use this if
+the room doesn't have a name set or in 1-1 chats.
+
+Example:
+
+    my $room = Matrix::Client::Room $room .= new(
+        :$access-token, :$home-server, :id('#34df12:matrix.org')
+    );
+    say 'Room name: ' ~ $room.name              # OUTPUT: «Room name: »
+    say 'Room name: ' ~ $room.fallback-name     # OUTPUT: «Room name: Alice and Bob»
+
+=head2 aliases
+
+    method aliases(--> List)
+
+Get a list of aliases maintained by the local server for the given room.
+
+=head2 event
+
+    method event(Str $event-id --> Matrix::Response::RoomEvent)
+
+Get a single event based on the C<$event-id>. Returns a L<Matrix::Response::RoomEvent>.
 
 =head2 state
 
     multi method state(--> Seq)
-    multi method state(Str $event-type)
+    multi method state(Str $event-type, Str $state-key = "")
 
 Get the state events for the current state of a room. it will return a C<Seq>
 for every event on that room.
 
 If an C<$event-type> is passed, the return value will be the value of that
 single event.
+
+C<$state-key> is the key of the state to look up.
+
+=head2 joined-members
+
+    method joined-members()
+
+Returns the data for the members of the room.
+
+Example:
+
+    my $room = Matrix::Client::Room $room .= new(
+        :$access-token, :$home-server, :id('#34df12:matrix.org')
+    );
+    my $member = $room.joined-members.head;
+    # the key is the matrix id
+    say $member.key                     # OUTPUT: «@meeple:matrix.deprecated.org»
+    say $member.values<avatar_url>      # OUTPUT: «mxc://matrix.deprecated.org/NdSvF..»
+    say $member.values<display_name>    # OUTPUT: «meeple»
+
+=head2 messages
+
+    method messages(
+           Str:D :$from!, Str :$to,
+           Str :$dir where * eq 'f'|'b' = 'f',
+           Int :$limit = 10, :%filter
+           --> Matrix::Response::Messages
+    )
+
+Return a L<Matrix::Response::Messages> with the messages from
+C<$from>. This token can be obtained from a C<prev_batch> token
+returned for each room by the sync API, or from a C<start> or C<end>
+attributes from L<Matrix::Response::Messages>.
+
+=head2 members
+
+    method members(:$at, Str :$membership, Str :$not-membership --> Seq)
+
+Get the list of members for this room. This returns a C<Seq> of
+L<Matrix::Response::MemberEvent>.
+
+=head2 send
+
+    method send(Str $body!, Str :$type? = "m.text")
+
+Sends a message to the room. It will return the C<event_id> for this message.
 
 =head2 send-state
 
@@ -61,10 +128,48 @@ server.
 
 It will return the C<event_id> for this state change.
 
+=head2 invite
+
+    method invite(Str $user-id)
+
+Invite a user to the room.
+
+=head2 join
+
+    method join()
+
+Join the room. As the creation of the C<Matrix::Client::Room> expects
+a room id (C<#032mf90f:matrix.org> for example), you need to use the
+L<join-room> method of C<Matrix::Client> to join by an alias.
+
 =head2 leave
 
     method leave()
 
 Leaves the room.
+
+=head2 forget
+
+    method forget()
+
+Stop a user of remembering this particular room.
+
+=head2 kick
+
+    method kick(Str $user-id, Str $reason = "")
+
+Kick an user of this room.
+
+=head2 ban
+
+    method ban(Str $user-id, $reason = "")
+
+Ban an user of this room.
+
+=head2 unban
+
+    method unban(Str $user-id)
+
+Unban a user of this room.
 
 =end pod

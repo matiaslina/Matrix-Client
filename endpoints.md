@@ -75,7 +75,7 @@ from matrix.org. This will give you an overview about what's implemented in the 
 
 - [X] DELETE - /_matrix/client/r0/directory/room/{roomAlias}
 - [X] GET - /_matrix/client/r0/directory/room/{roomAlias}
-- [ ] GET - /_matrix/client/r0/rooms/{roomId}/aliases
+- [X] GET - /_matrix/client/r0/rooms/{roomId}/aliases
 - [X] PUT - /_matrix/client/r0/directory/room/{roomAlias}
 
 ## Room discovery
@@ -91,7 +91,7 @@ from matrix.org. This will give you an overview about what's implemented in the 
 - [X] POST - /_matrix/client/r0/rooms/{roomId}/forget
 - [X] POST - /_matrix/client/r0/rooms/{roomId}/invite
 - [ ] POST - /_matrix/client/r0/rooms/{roomId}/invite
-- [ ] POST - /_matrix/client/r0/rooms/{roomId}/join
+- [X] POST - /_matrix/client/r0/rooms/{roomId}/join
 - [X] POST - /_matrix/client/r0/rooms/{roomId}/kick
 - [X] POST - /_matrix/client/r0/rooms/{roomId}/leave
 - [X] POST - /_matrix/client/r0/rooms/{roomId}/unban
@@ -102,13 +102,13 @@ from matrix.org. This will give you an overview about what's implemented in the 
 - [ ] GET - /_matrix/client/r0/events/{eventId}
 - [ ] GET - /_matrix/client/r0/initialSync
 - [ ] GET - /_matrix/client/r0/rooms/{roomId}/context/{eventId}
-- [ ] GET - /_matrix/client/r0/rooms/{roomId}/event/{eventId}
+- [X] GET - /_matrix/client/r0/rooms/{roomId}/event/{eventId}
 - [ ] GET - /_matrix/client/r0/rooms/{roomId}/initialSync
 - [X] GET - /_matrix/client/r0/rooms/{roomId}/joined_members
-- [ ] GET - /_matrix/client/r0/rooms/{roomId}/members
+- [X] GET - /_matrix/client/r0/rooms/{roomId}/members
 - [X] GET - /_matrix/client/r0/rooms/{roomId}/messages
 - [X] GET - /_matrix/client/r0/rooms/{roomId}/state
-- [ ] GET - /_matrix/client/r0/rooms/{roomId}/state/{eventType}/{stateKey}
+- [X] GET - /_matrix/client/r0/rooms/{roomId}/state/{eventType}/{stateKey}
 - [X] GET - /_matrix/client/r0/sync
 - [ ] GET - /_matrix/client/r0/user/{userId}/filter/{filterId}
 - [ ] POST - /_matrix/client/r0/rooms/{roomId}/receipt/{receiptType}/{eventId}
@@ -176,5 +176,4 @@ from matrix.org. This will give you an overview about what's implemented in the 
 
 # Endpoint completion
 
-0.398058% - (41/103)
-
+0.446602% - (46/103)

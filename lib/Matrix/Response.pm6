@@ -23,6 +23,10 @@ class Matrix::Response::StateEvent is Matrix::Response::RoomEvent {
     has $.state_key;
 }
 
+class Matrix::Response::MemberEvent is Matrix::Response::StateEvent {
+    has $.type is required where 'm.room.member';
+}
+
 class Matrix::Response::Timeline {
     has Matrix::Response::Event @.events;
     has Bool $limited;

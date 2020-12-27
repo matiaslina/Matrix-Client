@@ -58,6 +58,12 @@ sub gather-events($room-id, $from) {
     }
 }
 
+class Matrix::Response::Messages {
+    has $.start;
+    has $.end;
+    has Matrix::Response::RoomEvent @.messages;
+}
+
 class Matrix::Response::Sync {
     has Str $.next-batch;
     has Matrix::Response::Event @.presence;

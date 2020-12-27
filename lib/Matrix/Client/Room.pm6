@@ -82,15 +82,31 @@ method joined-members {
 }
 
 #| GET - /_matrix/client/r0/rooms/{roomId}/messages
-method messages() {
-    my $res = $.get("/messages");
+method messages(
+    Str:D :$from!, Str :$to,
+    Str :$dir where * eq 'f'|'b' = 'f',
+    Int :$limit = 10, :%filter,
+    --> Matrix::Response::Messages
+) {
+    my $res = $.get(
+        "/messages", :$from, :$to, :$dir, :$limit, :%filter
+    );
     my $data = from-json($res.content);
 
-    return $data<chunk>.clone;
+
+    my @messages = $data<chunk>.map(-> $ev {
+        Matrix::Response::RoomEvent.new(|$ev)
+    });
+
+    Matrix::Response::Messages.new(
+        start => $data<start>,
+        end => $data<end>,
+        messages => @messages
+    )
 }
 
 #| GET - /_matrix/client/r0/rooms/{roomId}/members
-method members(:$at, Str :$membership, Str :$not-membership) {
+method members(:$at, Str :$membership, Str :$not-membership --> Seq) {
     my %query;
 
     %query<at> = $at with $at;

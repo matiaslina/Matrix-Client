@@ -21,7 +21,15 @@ jobs:
     steps:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - name: Checkout
-      uses: actions/checkout@v1
+      uses: actions/checkout@v2
     - name: Run tests
       id: tests
-      uses: JJ/raku-container-action@master
+      uses: Raku/setup-raku@v1
+      with:
+        raku-version: 'latest'
+    - name: Install Dependencies
+      run: zef install --deps-only --/test --test-depends .
+    - name: Install App::Prove6
+      run: zef install --/test App::Prove6
+    - name: Run Tests
+      run: prove6 -l t xt

@@ -23,6 +23,10 @@ class Matrix::Response::StateEvent is Matrix::Response::RoomEvent {
     has $.state_key;
 }
 
+class Matrix::Response::MemberEvent is Matrix::Response::StateEvent {
+    has $.type is required where 'm.room.member';
+}
+
 class Matrix::Response::Timeline {
     has Matrix::Response::Event @.events;
     has Bool $limited;
@@ -52,6 +56,12 @@ sub gather-events($room-id, $from) {
     gather for $from<events>.List -> $ev {
         take Matrix::Response::StateEvent.new(:room_id($room-id), |$ev);
     }
+}
+
+class Matrix::Response::Messages {
+    has $.start;
+    has $.end;
+    has Matrix::Response::RoomEvent @.messages;
 }
 
 class Matrix::Response::Sync {
@@ -123,7 +133,6 @@ class Tag {
     }
 }
 
-
 class Matrix::Response::Device {
     has Str $.device-id;
     has $.display-name;
@@ -136,4 +145,12 @@ class Matrix::Response::Device {
         :last_seen_ip(:$!last-seen-ip)?,
         :last_seen_ts(:$!last-seen-ts)?
     ) { }
+}
+
+class Matrix::Response::MediaStore::Config {
+    has Int $.upload-size;
+
+    method new(%config) {
+        self.bless(:upload-size(%config<m.upload.size> // Int));
+    }
 }

@@ -25,15 +25,8 @@ method !get-name() {
     $!name = $data<name>;
 }
 
-#| GET - /_matrix/client/r0/rooms/{roomId}/joined_members
-method joined-members {
-    my %data = from-json($.get("/joined_members").content);
-    %data<joined>
-}
-
-method name {
+method name(--> Str) {
     self!get-name;
-
     $!name
 }
 
@@ -52,13 +45,82 @@ method fallback-name(--> Str) {
     };
 }
 
+#| GET - /_matrix/client/r0/rooms/{roomId}/aliases
+method aliases(--> List) {
+    my %data = from-json($.get('/aliases').content);
+    %data<aliases>.List
+}
+
+# Events
+
+## Getting events for a room
+
+#| GET - /_matrix/client/r0/rooms/{roomId}/event/{eventId}
+method event(Str $event-id --> Matrix::Response::RoomEvent) {
+    my %data = from-json($.get("/event/$event-id").content);
+    Matrix::Response::RoomEvent.new(|%data)
+}
+
+#| GET - /_matrix/client/r0/rooms/{roomId}/state
+multi method state(--> Seq) {
+    my $data = from-json($.get('/state').content);
+
+    gather for $data.List -> $event {
+        take Matrix::Response::StateEvent.new(:room-id($.id), |$event)
+    }
+}
+
+#| GET - /_matrix/client/r0/rooms/{roomId}/state/{eventType}/{stateKey}
+multi method state(Str $event-type, Str $state-key = "") {
+    from-json($.get("/state/$event-type/$state-key").content)
+}
+
+#| GET - /_matrix/client/r0/rooms/{roomId}/joined_members
+method joined-members {
+    my %data = from-json($.get("/joined_members").content);
+    %data<joined>
+}
+
 #| GET - /_matrix/client/r0/rooms/{roomId}/messages
-method messages() {
-    my $res = $.get("/messages");
+method messages(
+    Str:D :$from!, Str :$to,
+    Str :$dir where * eq 'f'|'b' = 'f',
+    Int :$limit = 10, :%filter,
+    --> Matrix::Response::Messages
+) {
+    my $res = $.get(
+        "/messages", :$from, :$to, :$dir, :$limit, :%filter
+    );
     my $data = from-json($res.content);
 
-    return $data<chunk>.clone;
+
+    my @messages = $data<chunk>.map(-> $ev {
+        Matrix::Response::RoomEvent.new(|$ev)
+    });
+
+    Matrix::Response::Messages.new(
+        start => $data<start>,
+        end => $data<end>,
+        messages => @messages
+    )
 }
+
+#| GET - /_matrix/client/r0/rooms/{roomId}/members
+method members(:$at, Str :$membership, Str :$not-membership --> Seq) {
+    my %query;
+
+    %query<at> = $at with $at;
+    %query<membership> = $membership with $membership;
+    %query<not_membership> = $not-membership with $not-membership;
+
+    my %data = from-json($.get('/members', |%query).content);
+
+    gather for %data<chunk>.List -> $ev {
+        take Matrix::Response::MemberEvent.new(|$ev)
+    }
+}
+
+##  Sending events to a room
 
 #| PUT - /_matrix/client/r0/rooms/{roomId}/send/{eventType}/{txnId}
 method send(Str $body!, Str :$type? = "m.text") {
@@ -71,20 +133,6 @@ method send(Str $body!, Str :$type? = "m.text") {
     from-json($res.content)<event_id>
 }
 
-#| GET - /_matrix/client/r0/rooms/{roomId}/state
-multi method state(--> Seq) {
-    my $data = from-json($.get('/state').content);
-
-    gather for $data.List -> $event {
-        take Matrix::Response::StateEvent.new(:room-id($.id), |$event)
-    }
-}
-
-#| GET - /_matrix/client/r0/rooms/{roomId}/state/{eventType}
-multi method state(Str $event-type) {
-    from-json($.get("/state/$event-type").content)
-}
-
 #| PUT - /_matrix/client/r0/rooms/{roomId}/state/{eventType}/{stateKey}
 method send-state(Str:D $event-type, :$state-key = "", *%args --> Str) {
     my $res = $.put(
@@ -94,9 +142,47 @@ method send-state(Str:D $event-type, :$state-key = "", *%args --> Str) {
     from-json($res.content)<event_id>
 }
 
+# Room membership!
+
+## Joining rooms
+
+#| POST - /_matrix/client/r0/rooms/{roomId}/invite
+method invite(Str $user-id) {
+    $.post('/invite', :$user-id)
+}
+
+#| POST - /_matrix/client/r0/rooms/{roomId}/join
+method join {
+    $.post('/join')
+}
+
+## Leaving rooms
+
 #| POST - /_matrix/client/r0/rooms/{roomId}/leave
-method leave() {
+method leave {
     $.post('/leave')
+}
+
+#| POST - /_matrix/client/r0/rooms/{roomId}/forget
+method forget {
+    $.post('/forget')
+}
+
+#| POST - /_matrix/client/r0/rooms/{roomId}/kick
+method kick(Str $user-id, Str $reason = "") {
+    $.post('/kick', :$user-id, :$reason)
+}
+
+## Banning users
+
+#| POST - /_matrix/client/r0/rooms/{roomId}/ban
+method ban(Str $user-id, $reason = "") {
+    $.post('/ban', :$user-id, :$reason)
+}
+
+#| POST - /_matrix/client/r0/rooms/{roomId}/unban
+method unban(Str $user-id) {
+    $.post('/unban', :$user-id)
 }
 
 method Str(--> Str) {

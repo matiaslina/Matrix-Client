@@ -73,7 +73,7 @@ multi method post(Str $path, :$media = False, *%params) {
 method post-bin(Str $path, Buf $buf, :$content-type) {
     my $encoded-path = $path.subst('#', '%23');
     my $req = POST(
-        $.base-url(:media) ~ $encoded-path,
+        $.base-url() ~ $encoded-path,
         content => $buf,
         Content-Type => $content-type
     );

@@ -29,11 +29,11 @@ from matrix.org. This will give you an overview about what's implemented in the 
 
 ## Media
 
-- [ ] GET - /_matrix/media/r0/config
-- [ ] GET - /_matrix/media/r0/download/{serverName}/{mediaId}
-- [ ] GET - /_matrix/media/r0/download/{serverName}/{mediaId}/{fileName}
+- [X] GET - /_matrix/media/r0/config
+- [X] GET - /_matrix/media/r0/download/{serverName}/{mediaId}
+- [X] GET - /_matrix/media/r0/download/{serverName}/{mediaId}/{fileName}
 - [ ] GET - /_matrix/media/r0/preview_url
-- [ ] GET - /_matrix/media/r0/thumbnail/{serverName}/{mediaId}
+- [X] GET - /_matrix/media/r0/thumbnail/{serverName}/{mediaId}
 - [X] POST - /_matrix/media/r0/upload
 
 ## OpenID
@@ -52,6 +52,8 @@ from matrix.org. This will give you an overview about what's implemented in the 
 - [ ] GET - /_matrix/client/r0/pushers
 - [ ] GET - /_matrix/client/r0/pushrules/
 - [ ] GET - /_matrix/client/r0/pushrules/{scope}/{kind}/{ruleId}
+- [ ] GET - /_matrix/client/r0/pushrules/{scope}/{kind}/{ruleId}/actions
+- [ ] GET - /_matrix/client/r0/pushrules/{scope}/{kind}/{ruleId}/enabled
 - [ ] POST - /_matrix/client/r0/pushers/set
 - [ ] PUT - /_matrix/client/r0/pushrules/{scope}/{kind}/{ruleId}
 - [ ] PUT - /_matrix/client/r0/pushrules/{scope}/{kind}/{ruleId}/actions
@@ -73,6 +75,7 @@ from matrix.org. This will give you an overview about what's implemented in the 
 
 - [X] DELETE - /_matrix/client/r0/directory/room/{roomAlias}
 - [X] GET - /_matrix/client/r0/directory/room/{roomAlias}
+- [X] GET - /_matrix/client/r0/rooms/{roomId}/aliases
 - [X] PUT - /_matrix/client/r0/directory/room/{roomAlias}
 
 ## Room discovery
@@ -88,7 +91,7 @@ from matrix.org. This will give you an overview about what's implemented in the 
 - [X] POST - /_matrix/client/r0/rooms/{roomId}/forget
 - [X] POST - /_matrix/client/r0/rooms/{roomId}/invite
 - [ ] POST - /_matrix/client/r0/rooms/{roomId}/invite
-- [ ] POST - /_matrix/client/r0/rooms/{roomId}/join
+- [X] POST - /_matrix/client/r0/rooms/{roomId}/join
 - [X] POST - /_matrix/client/r0/rooms/{roomId}/kick
 - [X] POST - /_matrix/client/r0/rooms/{roomId}/leave
 - [X] POST - /_matrix/client/r0/rooms/{roomId}/unban
@@ -99,14 +102,14 @@ from matrix.org. This will give you an overview about what's implemented in the 
 - [ ] GET - /_matrix/client/r0/events/{eventId}
 - [ ] GET - /_matrix/client/r0/initialSync
 - [ ] GET - /_matrix/client/r0/rooms/{roomId}/context/{eventId}
-- [ ] GET - /_matrix/client/r0/rooms/{roomId}/event/{eventId}
+- [X] GET - /_matrix/client/r0/rooms/{roomId}/event/{eventId}
 - [ ] GET - /_matrix/client/r0/rooms/{roomId}/initialSync
 - [X] GET - /_matrix/client/r0/rooms/{roomId}/joined_members
-- [ ] GET - /_matrix/client/r0/rooms/{roomId}/members
+- [X] GET - /_matrix/client/r0/rooms/{roomId}/members
 - [X] GET - /_matrix/client/r0/rooms/{roomId}/messages
-- [ ] GET - /_matrix/client/r0/rooms/{roomId}/state
-- [ ] GET - /_matrix/client/r0/rooms/{roomId}/state/{eventType}/{stateKey}
-- [ ] GET - /_matrix/client/r0/sync
+- [X] GET - /_matrix/client/r0/rooms/{roomId}/state
+- [X] GET - /_matrix/client/r0/rooms/{roomId}/state/{eventType}/{stateKey}
+- [X] GET - /_matrix/client/r0/sync
 - [ ] GET - /_matrix/client/r0/user/{userId}/filter/{filterId}
 - [ ] POST - /_matrix/client/r0/rooms/{roomId}/receipt/{receiptType}/{eventId}
 - [ ] POST - /_matrix/client/r0/user/{userId}/filter
@@ -115,7 +118,7 @@ from matrix.org. This will give you an overview about what's implemented in the 
 - [X] PUT - /_matrix/client/r0/rooms/{roomId}/state/{eventType}/{stateKey}
 - [ ] PUT - /_matrix/client/r0/rooms/{roomId}/typing/{userId}
 
-## Room ugprades
+## Room upgrades
 
 - [ ] POST - /_matrix/client/r0/rooms/{roomId}/upgrade
 
@@ -136,7 +139,7 @@ from matrix.org. This will give you an overview about what's implemented in the 
 ## Session management
 
 - [ ] GET - /_matrix/client/r0/login
-- [ ] POST - /_matrix/client/r0/login
+- [X] POST - /_matrix/client/r0/login
 - [X] POST - /_matrix/client/r0/logout
 - [ ] POST - /_matrix/client/r0/logout/all
 
@@ -151,20 +154,26 @@ from matrix.org. This will give you an overview about what's implemented in the 
 - [ ] GET - /_matrix/client/r0/register/available
 - [ ] GET - /_matrix/client/r0/user/{userId}/account_data/{type}
 - [ ] GET - /_matrix/client/r0/user/{userId}/rooms/{roomId}/account_data/{type}
-- [ ] GET - /_matrix/client/r0/user/{userId}/rooms/{roomId}/tags
+- [X] GET - /_matrix/client/r0/user/{userId}/rooms/{roomId}/tags
 - [ ] POST - /_matrix/client/r0/account/3pid
+- [ ] POST - /_matrix/client/r0/account/3pid/bind
 - [ ] POST - /_matrix/client/r0/account/3pid/delete
+- [ ] POST - /_matrix/client/r0/account/3pid/unbind
 - [ ] POST - /_matrix/client/r0/account/deactivate
 - [ ] POST - /_matrix/client/r0/account/password
 - [X] POST - /_matrix/client/r0/register
 - [ ] POST - /_matrix/client/r0/user_directory/search
-- [ ] PUT - /_matrix/client/r0/profile/{userId}/avatar_url
+- [X] PUT - /_matrix/client/r0/profile/{userId}/avatar_url
 - [X] PUT - /_matrix/client/r0/profile/{userId}/displayname
 - [ ] PUT - /_matrix/client/r0/user/{userId}/account_data/{type}
 - [ ] PUT - /_matrix/client/r0/user/{userId}/rooms/{roomId}/account_data/{type}
-- [ ] PUT - /_matrix/client/r0/user/{userId}/rooms/{roomId}/tags/{tag}
+- [X] PUT - /_matrix/client/r0/user/{userId}/rooms/{roomId}/tags/{tag}
 
 ## VOIP
 
 - [ ] GET - /_matrix/client/r0/voip/turnServer
 
+
+# Endpoint completion
+
+0.446602% - (46/103)

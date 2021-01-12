@@ -1,13 +1,13 @@
 use JSON::Fast;
 
-unit module Matrix::Response;
+unit module Matrix::Client::Response;
 
-class Matrix::Response::Event {
+class Event {
     has %.content;
     has $.type is required;
 }
 
-class Matrix::Response::RoomEvent is Matrix::Response::Event {
+class RoomEvent is Event {
     has Str $.sender;
     has Int $.origin_server_ts;
     has $.event_id;
@@ -18,57 +18,57 @@ class Matrix::Response::RoomEvent is Matrix::Response::Event {
     method room-id { $.room_id }
 }
 
-class Matrix::Response::StateEvent is Matrix::Response::RoomEvent {
+class StateEvent is RoomEvent {
     has $.prev_content;
     has $.state_key;
 }
 
-class Matrix::Response::MemberEvent is Matrix::Response::StateEvent {
+class MemberEvent is StateEvent {
     has $.type is required where 'm.room.member';
 }
 
-class Matrix::Response::Timeline {
-    has Matrix::Response::Event @.events;
+class Timeline {
+    has Event @.events;
     has Bool $limited;
     has Str $prev-batch;
 }
 
-class Matrix::Response::RoomInfo {
+class RoomInfo {
     has $.room-id is required;
-    has Matrix::Response::Event @.state;
-    has Matrix::Response::Timeline $.timeline;
+    has Event @.state;
+    has Timeline $.timeline;
 
     method gist(--> Str) {
-        "<Matrix::Response::RoomInfo: $.room-id>"
+        "<RoomInfo: $.room-id>"
     }
 }
 
-class Matrix::Response::InviteInfo {
+class InviteInfo {
     has $.room-id is required;
-    has Matrix::Response::Event @.events;
+    has Event @.events;
 
     method gist(--> Str) {
-        "<Matrix::Response::InviteState: $.room-id>"
+        "<InviteState: $.room-id>"
     }
 }
 
 sub gather-events($room-id, $from) {
     gather for $from<events>.List -> $ev {
-        take Matrix::Response::StateEvent.new(:room_id($room-id), |$ev);
+        take StateEvent.new(:room_id($room-id), |$ev);
     }
 }
 
-class Matrix::Response::Messages {
+class Messages {
     has $.start;
     has $.end;
-    has Matrix::Response::RoomEvent @.messages;
+    has RoomEvent @.messages;
 }
 
-class Matrix::Response::Sync {
+class Sync {
     has Str $.next-batch;
-    has Matrix::Response::Event @.presence;
-    has Matrix::Response::RoomInfo @.joined-rooms;
-    has Matrix::Response::InviteInfo @.invited-rooms;
+    has Event @.presence;
+    has RoomInfo @.joined-rooms;
+    has InviteInfo @.invited-rooms;
 
     multi method new(Str $json) {
         return self.new(from-json($json));
@@ -76,31 +76,31 @@ class Matrix::Response::Sync {
 
     multi method new(Hash $json) {
         my $next-batch = $json<next_batch>;
-        my Matrix::Response::Event @presence;
-        my Matrix::Response::RoomInfo @joined-rooms;
-        my Matrix::Response::InviteInfo @invited-rooms;
+        my Event @presence;
+        my RoomInfo @joined-rooms;
+        my InviteInfo @invited-rooms;
 
         for $json<presence><events>.List -> $ev {
-            @presence.push(Matrix::Response::Event.new(|$ev));
+            @presence.push(Event.new(|$ev));
         }
 
         for $json<rooms><join>.kv -> $room-id, $data {
             my @state = gather-events($room-id, $data<state>);
 
-            my $timeline = Matrix::Response::Timeline.new(
+            my $timeline = Timeline.new(
                 limited => $data<timeline><limited>,
                 prev-batch => $data<timeline><prev_batch>,
                 events => gather-events($room-id, $data<timeline>)
             );
 
-            @joined-rooms.push(Matrix::Response::RoomInfo.new(
+            @joined-rooms.push(RoomInfo.new(
                 :$room-id, :$timeline, :@state
             ));
         }
 
         for $json<rooms><invite>.kv -> $room-id, $data {
             my @events = gather-events($room-id, $data<invite_state>);
-            @invited-rooms.push(Matrix::Response::InviteInfo.new(
+            @invited-rooms.push(InviteInfo.new(
                 :$room-id, :@events
             ));
         }
@@ -133,7 +133,7 @@ class Tag {
     }
 }
 
-class Matrix::Response::Device {
+class Device {
     has Str $.device-id;
     has $.display-name;
     has $.last-seen-ip;
@@ -147,7 +147,7 @@ class Matrix::Response::Device {
     ) { }
 }
 
-class Matrix::Response::MediaStore::Config {
+class MediaStore::Config {
     has Int $.upload-size;
 
     method new(%config) {

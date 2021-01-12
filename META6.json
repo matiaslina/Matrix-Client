@@ -14,13 +14,13 @@
   "name" : "Matrix::Client",
   "perl" : "6.c",
   "provides" : {
-    "Matrix::Client" : "lib/Matrix/Client.pm6",
-    "Matrix::Client::Common" : "lib/Matrix/Client/Common.pm6",
-    "Matrix::Client::Exception" : "lib/Matrix/Client/Exception.pm6",
-    "Matrix::Client::Requester" : "lib/Matrix/Client/Requester.pm6",
+    "Matrix::Client" : "lib/Matrix/Client.rakumod",
+    "Matrix::Client::Common" : "lib/Matrix/Client/Common.rakumod",
+    "Matrix::Client::Exception" : "lib/Matrix/Client/Exception.rakumod",
+    "Matrix::Client::Requester" : "lib/Matrix/Client/Requester.rakumod",
     "Matrix::Client::MediaStore": "lib/Matrix/Client/MediaStore.rakumod",
-    "Matrix::Client::Room" : "lib/Matrix/Client/Room.pm6",
-    "Matrix::Response" : "lib/Matrix/Response.pm6"
+    "Matrix::Client::Room" : "lib/Matrix/Client/Room.rakumod",
+    "Matrix::Client::Response" : "lib/Matrix/Client/Response.rakumod"
   },
   "resources" : [ ],
   "source-url" : "https://github.com/matiaslina/perl6-matrix-client.git",

@@ -55,12 +55,12 @@ subtest 'User data' => {
 
 subtest 'sync' => {
     plan 3;
-    isa-ok $client.sync(), Matrix::Response::Sync,
+    isa-ok $client.sync(), Matrix::Client::Response::Sync,
            'sync without params is a Response';
     isa-ok $client.sync(:sync-filter('{"room": { "timeline": { "limit": 1 } } }')),
-           Matrix::Response::Sync, 'sync with Str sync-filter';
+           Matrix::Client::Response::Sync, 'sync with Str sync-filter';
     isa-ok $client.sync(:sync-filter(room => timeline => limit => 1)),
-           Matrix::Response::Sync, 'sync wit Hash sync-filter';
+           Matrix::Client::Response::Sync, 'sync wit Hash sync-filter';
 }
 
 subtest 'directory' => {

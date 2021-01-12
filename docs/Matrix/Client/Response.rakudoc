@@ -6,7 +6,6 @@
 
 =head1 Event
 
-
        class Matrix::Response::Event { }
 
 Common contents of a response.

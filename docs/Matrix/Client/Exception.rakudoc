@@ -1,0 +1,52 @@
+=begin pod
+
+=TITLE Matrix::Client::Exception
+
+=SUBTITLE Module for all exceptions.
+
+=head1 X::Matrix::Response
+
+Error querying the matrix server
+
+
+    class X::Matrix::Response is Exception
+
+Error class when the matrix server returns an error code (4XX).
+
+=head2 METHODS
+
+=head3 code
+
+Returns the HTTP error code.
+
+=head3 error
+
+Returns a C<Str> with the matrix error. A full list of error codes can be
+found in the L<matrix spec|https://matrix.org/docs/spec/client_server/r0.4.0.html#api-standards>.
+
+=head3 message
+
+    method message(--> Str)
+
+Returns the exception message.
+
+=head1 X::Matrix::MXCParse
+
+Error while parsing a L<Matrix Content (MXC) URI|https://matrix.org/docs/spec/client_server/r0.6.1#matrix-content-mxc-uris>.
+
+    class X::Matrix::MXCParse is Exception
+
+
+=head2 METHODS
+
+=head3 code
+
+Returns the URI that failed to parse.
+
+=head3 message
+
+    method message(--> Str)
+
+Returns the exception message.
+
+=end pod

@@ -3,7 +3,7 @@ use URI::Escape;
 
 use Matrix::Client::Requester;
 use Matrix::Client::Exception;
-use Matrix::Response;
+use Matrix::Client::Response;
 
 unit class Matrix::Client::MediaStore does Matrix::Client::Requester;
 
@@ -110,7 +110,7 @@ multi method thumbnail(Str $server-name, Str $media-id,
 }
 
 #| GET - /_matrix/media/r0/config
-method config(--> Matrix::Response::MediaStore::Config) {
+method config(--> Matrix::Client::Response::MediaStore::Config) {
     my $response = $.get("/config");
-    Matrix::Response::MediaStore::Config.new(from-json($response.content))
+    Matrix::Client::Response::MediaStore::Config.new(from-json($response.content))
 }

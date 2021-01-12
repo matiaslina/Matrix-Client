@@ -1,7 +1,7 @@
 use HTTP::Request::Common;
 use URI::Encode;
 use JSON::Fast;
-use Matrix::Response;
+use Matrix::Client::Response;
 use Matrix::Client::Common;
 use Matrix::Client::Room;
 use Matrix::Client::Requester;
@@ -123,14 +123,14 @@ method whoami {
 method devices(Matrix::Client:D: --> Seq) {
     my $data = from-json($.get("/devices").content);
     $data<devices>.map(-> $device-data {
-                              Matrix::Response::Device.new(|$device-data)
+                              Matrix::Client::Response::Device.new(|$device-data)
                           })
 }
 
 #| GET - /_matrix/client/r0/devices/{deviceId}
-method device(Matrix::Client:D: Str $device-id where *.chars > 0 --> Matrix::Response::Device) {
+method device(Matrix::Client:D: Str $device-id where *.chars > 0 --> Matrix::Client::Response::Device) {
     my $device-data = from-json($.get("/devices/$device-id").content);
-    Matrix::Response::Device.new(|$device-data)
+    Matrix::Client::Response::Device.new(|$device-data)
 }
 
 #| PUT - /_matrix/client/r0/devices/{deviceId}
@@ -143,10 +143,10 @@ method update-device(Matrix::Client:D:
 ## Presence
 
 #| GET - /_matrix/client/r0/presence/{userId}/status
-method presence(Matrix::Client:D: $user-id? --> Matrix::Response::Presence) {
+method presence(Matrix::Client:D: $user-id? --> Matrix::Client::Response::Presence) {
     my $id = $user-id // $.whoami;
     my $data = from-json($.get("/presence/$id/status").content);
-    Matrix::Response::Presence.new(|$data)
+    Matrix::Client::Response::Presence.new(|$data)
 }
 
 #| PUT - /_matrix/client/r0/presence/{userId}/status
@@ -164,7 +164,7 @@ multi method tags(Str $room-id, Str:D $tag, $order) {
 #| GET - /_matrix/client/r0/user/{userId}/rooms/{roomId}/tags
 multi method tags(Str $room-id) {
     my $id = $.whoami;
-    Matrix::Response::Tag.new(from-json($.get("/user/$id/rooms/$room-id/tags").content))
+    Matrix::Client::Response::Tag.new(from-json($.get("/user/$id/rooms/$room-id/tags").content))
 }
 
 #| DELETE - /_matrix/client/r0/user/{userId}/rooms/{roomId}/tags/{tag}
@@ -188,13 +188,13 @@ multi method sync(Str:D :$sync-filter, Str :$since = "") {
         :$since
     );
 
-    Matrix::Response::Sync.new($res.content)
+    Matrix::Client::Response::Sync.new($res.content)
 }
 
 #| GET - /_matrix/client/r0/sync
 multi method sync(:$since = "") {
     my $res = $.get("/sync", timeout => 30000, since => $since);
-    Matrix::Response::Sync.new($res.content)
+    Matrix::Client::Response::Sync.new($res.content)
 }
 
 # Rooms

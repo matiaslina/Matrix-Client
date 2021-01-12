@@ -1,14 +1,15 @@
-package X::Matrix {
-    class Response is Exception {
+module Matrix::Client::Exception {
+
+    class X::Matrix::Response is Exception {
         has $.code;
         has $.error;
 
-        method message {
+        method message(--> Str) {
             "$!code: $!error"
         }
     }
 
-    class MXCParse is Exception {
+    class X::Matrix::MXCParse is Exception {
         has $.uri;
 
         method message { "Cannot parse '$!uri'" }

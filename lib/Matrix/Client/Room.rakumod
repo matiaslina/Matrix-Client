@@ -1,7 +1,7 @@
 use JSON::Fast;
 use Matrix::Client::Common;
 use Matrix::Client::Requester;
-use Matrix::Response;
+use Matrix::Client::Response;
 
 unit class Matrix::Client::Room does Matrix::Client::Requester;
 
@@ -56,9 +56,9 @@ method aliases(--> List) {
 ## Getting events for a room
 
 #| GET - /_matrix/client/r0/rooms/{roomId}/event/{eventId}
-method event(Str $event-id --> Matrix::Response::RoomEvent) {
+method event(Str $event-id --> Matrix::Client::Response::RoomEvent) {
     my %data = from-json($.get("/event/$event-id").content);
-    Matrix::Response::RoomEvent.new(|%data)
+    Matrix::Client::Response::RoomEvent.new(|%data)
 }
 
 #| GET - /_matrix/client/r0/rooms/{roomId}/state
@@ -66,7 +66,7 @@ multi method state(--> Seq) {
     my $data = from-json($.get('/state').content);
 
     gather for $data.List -> $event {
-        take Matrix::Response::StateEvent.new(:room-id($.id), |$event)
+        take Matrix::Client::Response::StateEvent.new(:room-id($.id), |$event)
     }
 }
 
@@ -86,7 +86,7 @@ method messages(
     Str:D :$from!, Str :$to,
     Str :$dir where * eq 'f'|'b' = 'f',
     Int :$limit = 10, :%filter,
-    --> Matrix::Response::Messages
+    --> Matrix::Client::Response::Messages
 ) {
     my $res = $.get(
         "/messages", :$from, :$to, :$dir, :$limit, :%filter
@@ -95,10 +95,10 @@ method messages(
 
 
     my @messages = $data<chunk>.map(-> $ev {
-        Matrix::Response::RoomEvent.new(|$ev)
+        Matrix::Client::Response::RoomEvent.new(|$ev)
     });
 
-    Matrix::Response::Messages.new(
+    Matrix::Client::Response::Messages.new(
         start => $data<start>,
         end => $data<end>,
         messages => @messages
@@ -116,7 +116,7 @@ method members(:$at, Str :$membership, Str :$not-membership --> Seq) {
     my %data = from-json($.get('/members', |%query).content);
 
     gather for %data<chunk>.List -> $ev {
-        take Matrix::Response::MemberEvent.new(|$ev)
+        take Matrix::Client::Response::MemberEvent.new(|$ev)
     }
 }
 

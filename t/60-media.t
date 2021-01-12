@@ -60,7 +60,7 @@ subtest 'config', {
         }
     }
 
-    isa-ok $media.config, Matrix::Response::MediaStore::Config, 'Can load Associative';
+    isa-ok $media.config, Matrix::Client::Response::MediaStore::Config, 'Can load Associative';
     is $media.config.upload-size, 5000, 'correct upload size';
 
     my $empty-media = Matrix::Client::MediaStore.new(:home-server("1234")) but role {
@@ -69,7 +69,7 @@ subtest 'config', {
         }
     }
 
-    isa-ok $empty-media.config, Matrix::Response::MediaStore::Config, 'Can load empty configuration';
+    isa-ok $empty-media.config, Matrix::Client::Response::MediaStore::Config, 'Can load empty configuration';
     is $empty-media.config.upload-size, Int, 'Unknown upload-size';
     nok $empty-media.config.upload-size.defined, 'upload-size not defined';
 

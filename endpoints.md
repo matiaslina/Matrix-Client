@@ -61,7 +61,7 @@ from matrix.org. This will give you an overview about what's implemented in the 
 
 ## Read Markers
 
-- [ ] POST - /_matrix/client/r0/rooms/{roomId}/read_markers
+- [X] POST - /_matrix/client/r0/rooms/{roomId}/read_markers
 
 ## Reporting content
 
@@ -176,4 +176,4 @@ from matrix.org. This will give you an overview about what's implemented in the 
 
 # Endpoint completion
 
-0.446602% - (46/103)
+0.456311% - (47/103)

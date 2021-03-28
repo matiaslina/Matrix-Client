@@ -6,7 +6,7 @@ use Matrix::Client::Response;
 unit class Matrix::Client::Room does Matrix::Client::Requester;
 
 has $!name;
-has $.id;
+has $.id is required;
 
 submethod TWEAK {
     $!url-prefix = "/rooms/$!id";
@@ -141,6 +141,19 @@ method send-state(Str:D $event-type, :$state-key = "", *%args --> Str) {
     );
     from-json($res.content)<event_id>
 }
+
+#| POST - /_matrix/client/r0/rooms/{roomId}/read_markers
+method read-marker(Str:D $fully-read, Str $read?) {
+    my %data = %(
+        "m.fully_read" => $fully-read
+    );
+
+    %data<m.read> = $read with $read;
+
+    $.post('/read_markers', |%data);
+}
+
+method typing()
 
 # Room membership!
 

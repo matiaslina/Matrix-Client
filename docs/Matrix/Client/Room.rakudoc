@@ -128,6 +128,16 @@ server.
 
 It will return the C<event_id> for this state change.
 
+=head2 read-marker
+
+    method read-marker(Str:D $fully-read, Str $read?)
+
+Sets the position of the read marker for this room, and optionally the
+read receipt's location.
+
+The C<$fully-read> and C<$read> parameters are event ids where the
+markers will be placed.
+
 =head2 invite
 
     method invite(Str $user-id)

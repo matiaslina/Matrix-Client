@@ -1,7 +1,14 @@
 use lib 'lib';
 use Test;
 use Matrix::Client;
-plan 10;
+plan 12;
+
+use-ok 'Matrix::Client::Room';
+
+my $room = Matrix::Client::Room.new(:home-server<test>, :id<!something>);
+can-ok $room, 'read-marker';
+
+# Integrations tests;
 
 unless %*ENV<MATRIX_CLIENT_TEST_SERVER> {
     skip-rest 'No test server setted';

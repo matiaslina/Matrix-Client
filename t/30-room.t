@@ -7,6 +7,7 @@ use-ok 'Matrix::Client::Room';
 
 my $room = Matrix::Client::Room.new(:home-server<test>, :id<!something>);
 can-ok $room, 'read-marker';
+can-ok $room, 'typing';
 
 # Integrations tests;
 

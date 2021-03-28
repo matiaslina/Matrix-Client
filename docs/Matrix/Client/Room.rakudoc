@@ -138,6 +138,15 @@ read receipt's location.
 The C<$fully-read> and C<$read> parameters are event ids where the
 markers will be placed.
 
+=head2 typing
+
+    method typing(Bool $typing, Str :$user-id!, Int :$timeout)
+
+Sends a typing event to the server telling that C<$user-id> is typing
+or not (depending on C<$typing> argument).
+
+The C<$timeout> parameter is optional for this endpoint.
+
 =head2 invite
 
     method invite(Str $user-id)

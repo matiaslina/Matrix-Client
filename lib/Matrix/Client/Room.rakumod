@@ -153,7 +153,15 @@ method read-marker(Str:D $fully-read, Str $read?) {
     $.post('/read_markers', |%data);
 }
 
-method typing()
+#| PUT - /_matrix/client/r0/rooms/{roomId}/typing/{userId}
+method typing(Bool $typing, Str :$user-id!, Int :$timeout) {
+    my %data = :$typing;
+
+    %data<timeout> = $timeout with $timeout;
+    $.put(
+        "/typing/{$user-id}", |%data
+    );
+}
 
 # Room membership!
 

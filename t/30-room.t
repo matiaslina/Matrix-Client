@@ -1,7 +1,7 @@
 use lib 'lib';
 use Test;
 use Matrix::Client;
-plan 12;
+plan 14;
 
 use-ok 'Matrix::Client::Room';
 
@@ -107,3 +107,32 @@ subtest 'name' => {
 
     $test-room.leave;
 };
+
+subtest 'ban' => {
+    plan 2;
+    my Matrix::Client $new-user-client .= new(:$home-server);
+    my $new-username = ('a'..'z').pick(20).join;
+    $new-user-client.register($new-username, 'password');
+    $new-user-client.join-room($public-room-id);
+    my $user-id = $new-user-client.whoami;
+
+    my $room = $client.create-room(
+        :public,
+        :preset<public_chat>,
+        :name("The Grand Duke Pub"),
+        :topic("All about happy hour"),
+        :creation_content({
+            "m.federate" => False
+        })
+    );
+
+    $new-user-client.join-room($room.id);
+
+    lives-ok {
+        $room.ban($user-id, :reason<testing>)
+    }, 'can ban usernames';
+
+    lives-ok {
+        $room.unban($user-id, :reason<testing>);
+    }, 'can unban';
+}

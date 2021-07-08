@@ -1,6 +1,7 @@
 current
 =======
 
+* Fix ban, unban, invite and kick methods caused by parameters with dash
 * Add `room` heper method
 * Add read-markers API support
 * Add typing api support

@@ -191,19 +191,19 @@ method forget {
 
 #| POST - /_matrix/client/r0/rooms/{roomId}/kick
 method kick(Str $user-id, Str $reason = "") {
-    $.post('/kick', :$user-id, :$reason)
+    $.post('/kick', :user_id($user-id), :$reason)
 }
 
 ## Banning users
 
 #| POST - /_matrix/client/r0/rooms/{roomId}/ban
 method ban(Str $user-id, $reason = "") {
-    $.post('/ban', :$user-id, :$reason)
+    $.post('/ban', :user_id($user-id), :$reason)
 }
 
 #| POST - /_matrix/client/r0/rooms/{roomId}/unban
 method unban(Str $user-id) {
-    $.post('/unban', :$user-id)
+    $.post('/unban', :user_id($user-id))
 }
 
 method Str(--> Str) {

@@ -1,7 +1,7 @@
 use lib 'lib';
 use Test;
 use Matrix::Client;
-plan 5;
+plan 7;
 
 unless %*ENV<MATRIX_CLIENT_TEST_SERVER> {
     skip-rest 'No test server setted';
@@ -20,7 +20,20 @@ subtest 'creation' => {
     $client .= new(:$home-server, :$device-id);
     isnt $client.home-server, '', 'home server isnt empty';
     isnt $client.device-id, '', 'device-id isnt empty';
-    note $client.base-url;
+}
+
+subtest 'register' => {
+    plan 2;
+    my Matrix::Client $new-user-client .= new(:$home-server, :$device-id);
+    my $new-username = ('a'..'z').pick(20).join;
+    lives-ok {
+        $new-user-client.register(
+            $new-username,
+            'P4ssw0rd'
+        );
+    }, 'can .register';
+
+    isnt $new-user-client.access-token, '', 'access-token setted';
 }
 
 subtest 'login' => {
@@ -94,4 +107,32 @@ subtest 'directory' => {
     }, X::Matrix::Response,
        message => /M_NOT_FOUND/,
        "Room not found after delete";
+}
+
+subtest 'ban' => {
+    plan 2;
+    my Matrix::Client $new-user-client .= new(:$home-server);
+    my $new-username = ('a'..'z').pick(20).join;
+    $new-user-client.register($new-username, 'password');
+    my $user-id = $new-user-client.whoami;
+
+    my $room = $client.create-room(
+        :public,
+        :preset<public_chat>,
+        :name("The Grand Duke Pub"),
+        :topic("All about happy hour"),
+        :creation_content({
+            "m.federate" => False
+        })
+    );
+
+    $new-user-client.join-room($room.id);
+
+    lives-ok {
+        $client.ban($room.id, $user-id, :reason<testing>)
+    }, 'can ban usernames';
+
+    lives-ok {
+        $client.unban($room.id, $user-id, :reason<testing>);
+    }, 'can unban';
 }

@@ -1,0 +1,49 @@
+current
+=======
+
+* Add read-markers API support
+* Add typing api support
+
+v0.6.1
+======
+
+* Fix “Too few positionals passed; expected 2 arguments but got 1” on
+  response tests.
+
+v0.6.0
+======
+
+* Add MediaStore class that implements /_matrix/media endpoints. This class can:
+  - Parse MXC uris
+  - Download files
+  - Upload files
+  - Download/generate thumbnails
+  - Get the server configuration
+* Add .media method for Matrix::Client
+* Misc changes on the load-docs.p6 scripts that generates the endpoints.md
+
+v0.5.2
+======
+
+* Lot of changes from Perl6 to Raku. This includes file extensions,
+  mentions in the code and shebang
+* Fix tests that required JSON::Tiny
+
+v0.5.1
+======
+
+* Use JSON::Fast in favor of JSON::Tiny
+
+v0.5.0
+======
+* Implemented list and update on device management endpoints
+* Use Authorization header in favor to access token query param
+
+v0.4.0
+======
+
+v0.3.0
+======
+
+v0.2.1
+======

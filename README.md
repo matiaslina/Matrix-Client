@@ -2,8 +2,11 @@
 
 A [Raku](https://raku.org) library for [Matrix](https://matrix.org).
 
-## Synopsis
+## Installation
 
+    zef install Matrix::Client
+
+## Usage
 
     use Matrix::Client;
 
@@ -39,9 +42,10 @@ Here's a not complete list of things that can be done:
 * Send messages
 * Upload files to a home-server
 
-
 There are many missing endpoints (you can check a complete checklist
 [here](https://github.com/matiaslina/perl6-matrix-client/blob/master/endpoints.md)).
+If you want to contribute with some endpoint check the
+[CONTRIBUTING.md](CONTRIBUTING.md) file.
 
 ## Documentation
 
@@ -50,4 +54,4 @@ includes API documentation, basic usage, examples, etc.
 
 ## Author
 
-Matías Linares <matias@deprecated.org> | Matrix ID: `@matias:matrix.deprecated.org`
+Matías Linares <matias@deprecated.org> | Matrix ID: `@matias:chat.deprecated.org`

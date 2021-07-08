@@ -199,6 +199,15 @@ multi method sync(:$since = "") {
 
 # Rooms
 
+#| Helper method to get a Matrix::Client::Room instance
+method room(Str $room-id --> Matrix::Client::Room) {
+    Matrix::Client::Room.new(
+        id => $room-id,
+        access-token => self.access-token,
+        home-server => self.home-server
+    )
+}
+
 #| POST - /_matrix/client/r0/createRoom
 method create-room(
     Bool :$public = False,
@@ -216,11 +225,7 @@ method create-room(
 
     my $res = from-json($.post('/createRoom', |%params).content);
 
-    Matrix::Client::Room.new(
-        id => $res<room_id>,
-        access-token => self.access-token,
-        home-server => self.home-server
-    )
+    $.room($res<room_id>)
 }
 
 #| POST - /_matrix/client/r0/join/{roomIdOrAlias}

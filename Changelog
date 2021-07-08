@@ -1,6 +1,7 @@
 current
 =======
 
+* Add `room` heper method
 * Add read-markers API support
 * Add typing api support
 

@@ -1,4 +1,7 @@
-current
+Current
+=======
+
+v0.6.2
 =======
 
 * Fix ban, unban, invite and kick methods caused by parameters with dash
